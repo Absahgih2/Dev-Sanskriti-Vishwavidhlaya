@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAAC Approved - Dev Sanskriti Vishwavidyalaya</title>
+  <meta name="description" content="NAAC accreditation documentation and reports for Dev Sanskriti Vishwavidyalaya (DSVV).">
+  <link rel="icon" type="image/png" href="Dev_Sanskriti_Vishwavidyalaya Logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --primary-color: #8B4513;
+      --secondary-color: #D4AF37;
+      --accent-color: #CD7037;
+      --light-bg: #FEEDC1;
+      --dark-bg: #2F4F2F;
+      --text-light: #FFFFFF;
+      --text-dark: #333333;
+      --shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      --transition: all 0.3s ease;
+      --topbar-bg: #1a1145;
+      --nav-bg: #ffffff;
+      --nav-border: #2d1b69;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f8f8; color: var(--text-dark); overflow-x: hidden; }
+    .top-bar { background: var(--topbar-bg); color: white; padding: 0.6rem 5%; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+    .top-bar-left { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+    .top-bar-left a { color: white; text-decoration: none; display: flex; align-items: center; gap: 0.4rem; transition: opacity 0.3s; }
+    .top-bar-left a:hover { opacity: 0.8; }
+    .top-bar-right { display: flex; align-items: center; gap: 1.25rem; }
+    .top-bar-right a { color: white; text-decoration: none; display: flex; align-items: center; gap: 0.4rem; transition: opacity 0.3s; font-weight: 500; }
+    .top-bar-right a:hover { opacity: 0.8; }
+    .site-header { background: white; padding: 1rem 5%; border-bottom: 3px solid var(--nav-border); }
+    .header-container { display: flex; align-items: center; justify-content: center; max-width: 1200px; margin: 0 auto; }
+    .header-brand { display: flex; align-items: center; justify-content: center; }
+    .header-logo { height: 120px; width: auto; object-fit: contain; }
+    .main-nav { background: white; padding: 0; position: sticky; top: 0; left: 0; width: 100%; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-bottom: 2px solid #e8e8e8; }
+    .main-nav .nav-container { display: flex; justify-content: center; align-items: center; max-width: 100%; margin: 0 auto; padding: 0 2%; }
+    .main-nav .nav-links { display: flex; gap: 0; list-style: none; flex-wrap: nowrap; justify-content: center; width: 100%; }
+    .main-nav .nav-links li { position: relative; flex: 1; }
+    .main-nav .nav-links a { text-decoration: none; color: #333; font-weight: 600; font-size: 0.82rem; padding: 0.9rem 0.4rem; display: flex; align-items: center; justify-content: center; gap: 0.2rem; transition: all 0.3s; border-bottom: 3px solid transparent; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; text-align: center; }
+    .main-nav .nav-links a:hover, .main-nav .nav-links a.active { color: var(--primary-color); border-bottom-color: var(--secondary-color); background: rgba(212, 175, 55, 0.05); }
+    .main-nav .dropdown-menu { position: absolute; top: 100%; left: 0; background: white; min-width: 220px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); border-radius: 0 0 8px 8px; display: none; z-index: 1001; border-top: 3px solid var(--secondary-color); }
+    .main-nav .has-dropdown:hover .dropdown-menu { display: block; }
+    .main-nav .dropdown-menu li a { padding: 0.75rem 1.25rem; font-size: 0.85rem; border-bottom: 1px solid #f0f0f0; text-transform: none; border-left: 3px solid transparent; }
+    .main-nav .dropdown-menu li a:hover { background: #f8f8f8; border-left-color: var(--secondary-color); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 5px; z-index: 1001; }
+    .hamburger span { width: 28px; height: 3px; background: var(--primary-color); border-radius: 3px; transition: var(--transition); }
+    .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
+    section { padding: 5rem 5%; max-width: 1200px; margin: 0 auto; }
+    .section-title { text-align: center; margin-bottom: 3rem; }
+    .section-title h2 { font-size: 2.5rem; color: var(--primary-color); position: relative; display: inline-block; }
+    .section-title h2::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 80px; height: 3px; background: var(--secondary-color); }
+    .section-subtitle { color: #666; font-size: 1.1rem; margin-top: 1rem; font-style: italic; }
+    .article-container { max-width: 900px; margin: 0 auto; background: white; padding: 3rem; border-radius: 16px; box-shadow: var(--shadow); border-top: 5px solid var(--secondary-color); border-bottom: 5px solid var(--primary-color); text-align: left; }
+    .article-section { margin-bottom: 2.5rem; }
+    .article-section:last-child { margin-bottom: 0; }
+    .article-section h3 { font-size: 1.4rem; color: var(--primary-color); margin-bottom: 1rem; font-weight: 700; border-left: 4px solid var(--accent-color); padding-left: 12px; line-height: 1.3; text-transform: uppercase; letter-spacing: 0.5px; }
+    .article-section p { font-size: 1.02rem; line-height: 1.8; color: #444; margin-bottom: 1rem; }
+    .downloads-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; text-align: left; margin-top: 2rem; }
+    .download-item { background: #fafafa; border: 1px solid #eee; border-radius: 10px; padding: 1.2rem; display: flex; align-items: center; gap: 1rem; transition: var(--transition); }
+    .download-item:hover { background: #fff; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); border-color: var(--secondary-color); transform: translateY(-2px); }
+    .download-icon { font-size: 2.2rem; color: #dc3545; }
+    .download-info { flex: 1; }
+    .download-info h5 { font-size: 1.05rem; color: var(--primary-color); margin-bottom: 0.25rem; font-weight: 700; }
+    .download-info span { font-size: 0.85rem; color: #777; }
+    .download-btn { padding: 8px 16px; background: var(--accent-color); color: white !important; text-decoration: none; border-radius: 20px; font-size: 0.85rem; font-weight: 600; transition: var(--transition); border: 1px solid var(--accent-color); display: inline-flex; align-items: center; gap: 6px; }
+    .download-btn:hover { background: var(--secondary-color); border-color: var(--secondary-color); color: var(--primary-color) !important; }
+    footer { background: #1a1a2e; color: white; padding: 4rem 5% 2rem; }
+    .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+    .footer-col h3 { color: var(--secondary-color); margin-bottom: 1.5rem; font-size: 1.2rem; position: relative; padding-bottom: 0.75rem; }
+    .footer-col h3::after { content: ''; position: absolute; left: 0; bottom: 0; width: 40px; height: 2px; background: var(--secondary-color); }
+    .footer-col p { color: #ccc; line-height: 1.7; margin-bottom: 0.5rem; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 0.6rem; }
+    .footer-col ul li a { color: #ccc; text-decoration: none; transition: color 0.3s; }
+    .footer-col ul li a:hover { color: var(--secondary-color); }
+    .footer-logo { height: 70px; width: auto; margin-bottom: 1rem; filter: brightness(0) invert(1); }
+    .footer-bottom { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); }
+    .footer-bottom p { color: #aaa; font-size: 0.9rem; margin-bottom: 0.3rem; }
+    .social-links { display: flex; gap: 1rem; margin-top: 1rem; }
+    .social-links a { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: var(--transition); }
+    .social-links a:hover { background: var(--secondary-color); transform: translateY(-3px); }
+    @media (max-width: 768px) { .downloads-grid { grid-template-columns: 1fr; } .download-item { flex-direction: column; text-align: center; } .footer-container { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <a href="tel:+911334261366"><i class="fas fa-phone"></i> +91-1334-261366</a>
+      <a href="mailto:registrar@devsanskritivishwavidyalaya.com"><i class="fas fa-envelope"></i> registrar@devsanskritivishwavidyalaya.com</a>
+    </div>
+    <div class="top-bar-right">
+      <a href="programs.html"><i class="fas fa-file-alt"></i> Admission Form</a>
+      <a href="programs.html"><i class="fas fa-download"></i> Download</a>
+      <a href="programs.html"><i class="fas fa-chart-bar"></i> Result</a>
+    </div>
+  </div>
+  <header class="site-header">
+    <div class="header-container">
+      <div class="header-brand">
+        <a href="index.html"><img src="Dev_Sanskriti_Vishwavidyalaya Logo.png" alt="Dev Sanskriti Vishwavidyalaya Logo" class="header-logo"></a>
+      </div>
+    </div>
+  </header>
+  <nav class="main-nav" aria-label="Main navigation">
+    <div class="nav-container">
+      <ul class="nav-links" id="navLinks" role="menubar">
+        <li role="none"><a href="index.html" role="menuitem">Home</a></li>
+        <li role="none" class="has-dropdown">
+          <a href="#" class="dropdown-toggle" role="menuitem" aria-haspopup="true" aria-expanded="false">About DSVV <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a href="index.html" role="menuitem">About Our University</a></li>
+            <li role="none"><a href="ugc.html" role="menuitem">UGC 2F</a></li>
+          </ul>
+        </li>
+        <li role="none" class="has-dropdown">
+          <a href="#" class="dropdown-toggle" role="menuitem" aria-haspopup="true" aria-expanded="false">Approvals & Recognitions <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a href="naac.html" role="menuitem">NAAC Approved</a></li>
+            <li role="none"><a href="ugc.html" role="menuitem">UGC Recognition</a></li>
+            <li role="none"><a href="ncte.html" role="menuitem">NCTE Recognition</a></li>
+            <li role="none"><a href="nirf.html" role="menuitem">NIRF Status</a></li>
+            <li role="none"><a href="aiu.html" role="menuitem">AIU Membership</a></li>
+          </ul>
+        </li>
+        <li role="none" class="has-dropdown">
+          <a href="#" class="dropdown-toggle" role="menuitem" aria-haspopup="true" aria-expanded="false">Academics <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a href="academics.html" role="menuitem">Academic Structure</a></li>
+          </ul>
+        </li>
+        <li role="none" class="has-dropdown">
+          <a href="#" class="dropdown-toggle" role="menuitem" aria-haspopup="true" aria-expanded="false">Programs <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a href="programs.html" role="menuitem">Courses</a></li>
+          </ul>
+        </li>
+        <li role="none" class="has-dropdown">
+          <a href="#" class="dropdown-toggle" role="menuitem" aria-haspopup="true" aria-expanded="false">Gallery <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i></a>
+          <ul class="dropdown-menu" role="menu">
+            <li role="none"><a href="gallery.html" role="menuitem">Photo Gallery</a></li>
+          </ul>
+        </li>
+        <li role="none"><a href="index.html#contact" role="menuitem">Contact Us</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main id="main-content">
+    <section id="naac" aria-labelledby="naac-heading">
+      <div class="section-title">
+        <h2 id="naac-heading">NAAC Approved</h2>
+        <p class="section-subtitle">Official accreditation documentation and reports available for download</p>
+      </div>
+      <div class="article-container reveal" style="text-align: center;">
+        <div class="naac-logo-container" style="margin-bottom: 2rem;">
+          <img src="NAAC Logo.png" alt="NAAC Accreditation Logo" class="naac-logo" style="max-height: 120px; width: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));">
+        </div>
+        <p style="font-size: 1.15rem; line-height: 1.8; color: #444; max-width: 750px; margin: 0 auto 2.5rem;">
+          Dev Sanskriti Vishwavidyalaya is committed to maintaining the highest educational and accreditation standards. Below are the official documentation and reports approved by the National Assessment and Accreditation Council (NAAC).
+        </p>
+        <div class="downloads-grid">
+          <div class="download-item">
+            <div class="download-icon"><i class="fas fa-file-pdf"></i></div>
+            <div class="download-info">
+              <h5>NAAC Report 1</h5>
+              <span>Accreditation Document 1</span>
+            </div>
+            <a href="NAAC/1652264211_Document.pdf" target="_blank" class="download-btn" aria-label="Download NAAC Report 1"><i class="fas fa-download"></i> View / Download</a>
+          </div>
+          <div class="download-item">
+            <div class="download-icon"><i class="fas fa-file-pdf"></i></div>
+            <div class="download-info">
+              <h5>NAAC Report 2</h5>
+              <span>Accreditation Document 2</span>
+            </div>
+            <a href="NAAC/1652265166_Document.pdf" target="_blank" class="download-btn" aria-label="Download NAAC Report 2"><i class="fas fa-download"></i> View / Download</a>
+          </div>
+          <div class="download-item">
+            <div class="download-icon"><i class="fas fa-file-pdf"></i></div>
+            <div class="download-info">
+              <h5>NAAC Report 3</h5>
+              <span>Accreditation Document 3</span>
+            </div>
+            <a href="NAAC/1656398365_Document.pdf" target="_blank" class="download-btn" aria-label="Download NAAC Report 3"><i class="fas fa-download"></i> View / Download</a>
+          </div>
+          <div class="download-item">
+            <div class="download-icon"><i class="fas fa-file-pdf"></i></div>
+            <div class="download-info">
+              <h5>NAAC Report 4</h5>
+              <span>Accreditation Document 4</span>
+            </div>
+            <a href="NAAC/1697091351_Document%20(1).pdf" target="_blank" class="download-btn" aria-label="Download NAAC Report 4"><i class="fas fa-download"></i> View / Download</a>
+          </div>
+          <div class="download-item">
+            <div class="download-icon"><i class="fas fa-file-pdf"></i></div>
+            <div class="download-info">
+              <h5>NAAC Report 5</h5>
+              <span>Accreditation Document 5</span>
+            </div>
+            <a href="NAAC/1697091351_Document.pdf" target="_blank" class="download-btn" aria-label="Download NAAC Report 5"><i class="fas fa-download"></i> View / Download</a>
+          </div>
+          <div class="download-item">
+            <div class="download-icon"><i class="fas fa-file-pdf"></i></div>
+            <div class="download-info">
+              <h5>NAAC Report 6</h5>
+              <span>Accreditation Document 6</span>
+            </div>
+            <a href="NAAC/1729064404_Document.pdf" target="_blank" class="download-btn" aria-label="Download NAAC Report 6"><i class="fas fa-download"></i> View / Download</a>
+          </div>
+          <div class="download-item">
+            <div class="download-icon"><i class="fas fa-file-pdf"></i></div>
+            <div class="download-info">
+              <h5>NAAC Report 7</h5>
+              <span>Accreditation Document 7</span>
+            </div>
+            <a href="NAAC/1763978038_Document.pdf" target="_blank" class="download-btn" aria-label="Download NAAC Report 7"><i class="fas fa-download"></i> View / Download</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer role="contentinfo">
+    <div class="footer-container">
+      <div class="footer-col">
+        <img src="Dev_Sanskriti_Vishwavidyalaya Logo.png" alt="Dev Sanskriti Vishwavidyalaya Logo" class="footer-logo">
+        <p>Dev Sanskriti Vishwavidyalaya - A premier university dedicated to the integration of scientific education with cultural and spiritual values.</p>
+      </div>
+      <div class="footer-col">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="programs.html">Academic Programs</a></li>
+          <li><a href="academics.html">Academics</a></li>
+          <li><a href="why-choose.html">Why Choose DSVV</a></li>
+          <li><a href="gallery.html">Campus Gallery</a></li>
+          <li><a href="about.html">About DSVV</a></li>
+          <li><a href="naac.html">NAAC Approved</a></li>
+          <li><a href="ncte.html">NCTE Recognition</a></li>
+          <li><a href="ugc.html">UGC Commission</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>Contact Us</h3>
+        <p><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Sector-24, Block 7B, Ground Floor, Nawa Raipur Atal Nagar, Raipur, Chhattisgarh - 492018, India</p>
+        <p><i class="fas fa-envelope" aria-hidden="true"></i> <a href="mailto:registrar@devsanskritivishwavidyalaya.com">registrar@devsanskritivishwavidyalaya.com</a></p>
+      </div>
+      <div class="footer-col">
+        <h3>Connect With Us</h3>
+        <div class="social-links">
+          <a href="https://www.facebook.com/dsvvofficial" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://twitter.com/dsvvofficial" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+          <a href="https://www.instagram.com/dsvvofficial/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.youtube.com/channel/UC5OXRsDLXxKgIk9x11AwgqQ" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Dev Sanskriti Vishwavidyalaya (DSVV), Raipur, Chhattisgarh, India. All Rights Reserved.</p>
+      <p>A Premier University for Holistic Education | UGC Recognized | NAAC Accredited</p>
+    </div>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Dev Sanskriti Vishwavidyalaya</title>
+  <meta name="description" content="About Dev Sanskriti Vishwavidyalaya - dedicated to value-based, holistic education and academic excellence.">
+  <link rel="icon" type="image/png" href="Dev_Sanskriti_Vishwavidyalaya Logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root { --primary-color: #8B4513; --secondary-color: #D4AF37; --accent-color: #CD7037; --shadow: 0 8px 20px rgba(0, 0, 0, 0.15); --transition: all 0.3s ease; --topbar-bg: #1a1145; --nav-border: #2d1b69; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f8f8; color: #333; overflow-x: hidden; }
+    .top-bar { background: var(--topbar-bg); color: white; padding: 0.6rem 5%; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+    .top-bar-left, .top-bar-right { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+    .top-bar-left a, .top-bar-right a { color: white; text-decoration: none; display: flex; align-items: center; gap: 0.4rem; }
+    .site-header { background: white; padding: 1rem 5%; border-bottom: 3px solid var(--nav-border); }
+    .header-container { display: flex; align-items: center; justify-content: center; max-width: 1200px; margin: 0 auto; }
+    .header-logo { height: 120px; width: auto; }
+    .main-nav { background: white; position: sticky; top: 0; width: 100%; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-bottom: 2px solid #e8e8e8; }
+    .main-nav .nav-container { display: flex; justify-content: center; max-width: 100%; margin: 0 auto; padding: 0 2%; }
+    .main-nav .nav-links { display: flex; gap: 0; list-style: none; justify-content: center; width: 100%; }
+    .main-nav .nav-links li { position: relative; flex: 1; }
+    .main-nav .nav-links a { text-decoration: none; color: #333; font-weight: 600; font-size: 0.82rem; padding: 0.9rem 0.4rem; display: flex; align-items: center; justify-content: center; gap: 0.2rem; transition: all 0.3s; border-bottom: 3px solid transparent; text-transform: uppercase; white-space: nowrap; text-align: center; }
+    .main-nav .nav-links a:hover, .main-nav .nav-links a.active { color: var(--primary-color); border-bottom-color: var(--secondary-color); }
+    .main-nav .dropdown-menu { position: absolute; top: 100%; left: 0; background: white; min-width: 220px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); border-radius: 0 0 8px 8px; display: none; z-index: 1001; border-top: 3px solid var(--secondary-color); }
+    .main-nav .has-dropdown:hover .dropdown-menu { display: block; }
+    .main-nav .dropdown-menu li a { padding: 0.75rem 1.25rem; font-size: 0.85rem; border-bottom: 1px solid #f0f0f0; border-left: 3px solid transparent; }
+    .main-nav .dropdown-menu li a:hover { background: #f8f8f8; border-left-color: var(--secondary-color); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 5px; z-index: 1001; }
+    .hamburger span { width: 28px; height: 3px; background: var(--primary-color); border-radius: 3px; }
+    section { padding: 5rem 5%; max-width: 1200px; margin: 0 auto; }
+    .section-title { text-align: center; margin-bottom: 3rem; }
+    .section-title h2 { font-size: 2.5rem; color: var(--primary-color); position: relative; display: inline-block; }
+    .section-title h2::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 80px; height: 3px; background: var(--secondary-color); }
+    .section-subtitle { color: #666; font-size: 1.1rem; margin-top: 1rem; font-style: italic; }
+    .article-container { max-width: 900px; margin: 0 auto; background: white; padding: 3rem; border-radius: 16px; box-shadow: var(--shadow); border-top: 5px solid var(--secondary-color); border-bottom: 5px solid var(--primary-color); text-align: left; }
+    .article-intro { text-align: center; margin-bottom: 2.5rem; border-bottom: 1px dashed rgba(139, 69, 19, 0.2); padding-bottom: 2rem; }
+    .motto-box { margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px dashed rgba(139, 69, 19, 0.2); }
+    .motto-label { display: block; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-color); font-weight: 600; margin-bottom: 0.5rem; }
+    .motto-text { font-size: 2.2rem; color: var(--primary-color); font-family: 'Georgia', serif; font-style: italic; font-weight: 700; margin-bottom: 0.25rem; }
+    .motto-translation { font-size: 1.1rem; color: #555; font-style: italic; }
+    .article-intro-text { font-size: 1.15rem; line-height: 1.8; color: #333; }
+    .article-section { margin-bottom: 2.5rem; }
+    .article-section h3 { font-size: 1.4rem; color: var(--primary-color); margin-bottom: 1rem; font-weight: 700; border-left: 4px solid var(--accent-color); padding-left: 12px; text-transform: uppercase; }
+    .article-section p { font-size: 1.02rem; line-height: 1.8; color: #444; margin-bottom: 1rem; }
+    footer { background: #1a1a2e; color: white; padding: 4rem 5% 2rem; }
+    .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+    .footer-col h3 { color: var(--secondary-color); margin-bottom: 1.5rem; font-size: 1.2rem; position: relative; padding-bottom: 0.75rem; }
+    .footer-col h3::after { content: ''; position: absolute; left: 0; bottom: 0; width: 40px; height: 2px; background: var(--secondary-color); }
+    .footer-col p { color: #ccc; line-height: 1.7; margin-bottom: 0.5rem; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 0.6rem; }
+    .footer-col ul li a { color: #ccc; text-decoration: none; }
+    .footer-col ul li a:hover { color: var(--secondary-color); }
+    .footer-logo { height: 70px; margin-bottom: 1rem; filter: brightness(0) invert(1); }
+    .footer-bottom { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); }
+    .footer-bottom p { color: #aaa; font-size: 0.9rem; margin-bottom: 0.3rem; }
+    .social-links { display: flex; gap: 1rem; margin-top: 1rem; }
+    .social-links a { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; }
+    .social-links a:hover { background: var(--secondary-color); transform: translateY(-3px); }
+    @media (max-width: 768px) { .footer-container { grid-template-columns: 1fr; } .hamburger { display: flex; } .main-nav .nav-links { display: none; } .motto-text { font-size: 1.5rem; } }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <a href="tel:+911334261366"><i class="fas fa-phone"></i> +91-1334-261366</a>
+      <a href="mailto:registrar@devsanskritivishwavidyalaya.com"><i class="fas fa-envelope"></i> registrar@devsanskritivishwavidyalaya.com</a>
+    </div>
+    <div class="top-bar-right">
+      <a href="programs.html"><i class="fas fa-file-alt"></i> Admission Form</a>
+      <a href="programs.html"><i class="fas fa-download"></i> Download</a>
+      <a href="programs.html"><i class="fas fa-chart-bar"></i> Result</a>
+    </div>
+  </div>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html"><img src="Dev_Sanskriti_Vishwavidyalaya Logo.png" alt="DSVV Logo" class="header-logo"></a>
+    </div>
+  </header>
+  <nav class="main-nav">
+    <div class="nav-container">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li class="has-dropdown">
+          <a href="#" class="dropdown-toggle">About DSVV <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="about.html">About Our University</a></li>
+            <li><a href="ugc.html">UGC 2F</a></li>
+          </ul>
+        </li>
+        <li class="has-dropdown">
+          <a href="#" class="dropdown-toggle">Approvals & Recognitions <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="naac.html">NAAC Approved</a></li>
+            <li><a href="ugc.html">UGC Recognition</a></li>
+            <li><a href="ncte.html">NCTE Recognition</a></li>
+            <li><a href="nirf.html">NIRF Status</a></li>
+            <li><a href="aiu.html">AIU Membership</a></li>
+          </ul>
+        </li>
+        <li class="has-dropdown">
+          <a href="#" class="dropdown-toggle">Academics <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="academics.html">Academic Structure</a></li>
+          </ul>
+        </li>
+        <li class="has-dropdown">
+          <a href="#" class="dropdown-toggle">Programs <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="programs.html">Courses</a></li>
+          </ul>
+        </li>
+        <li class="has-dropdown">
+          <a href="#" class="dropdown-toggle">Gallery <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="gallery.html">Photo Gallery</a></li>
+          </ul>
+        </li>
+        <li><a href="index.html#contact">Contact Us</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <main>
+    <section id="about" aria-labelledby="about-heading">
+      <div class="section-title">
+        <h2 id="about-heading">About Dev Sanskriti Vishwavidyalaya</h2>
+        <p class="section-subtitle">Dedicated to value-based, holistic education and academic excellence</p>
+      </div>
+      <div class="article-container reveal">
+        <div class="article-intro">
+          <div class="motto-box">
+            <span class="motto-label">University Motto</span>
+            <h3 class="motto-text">"Tamaso Maa Jyotir Gamya"</h3>
+            <p class="motto-translation">"Lead us from darkness unto light"</p>
+          </div>
+          <p class="article-intro-text">
+            Dev Sanskriti Vishwavidyalaya (DSVV), Chhattisgarh, is a state-private university established under the Chhattisgarh Private Universities Act and recognized by the University Grants Commission (UGC). The university is dedicated to value-based, holistic education that harmonizes modern academic rigor, technology, and professional skills with ethical, cultural, and spiritual development.
+          </p>
+        </div>
+        <div class="article-section">
+          <h3>Overview & Genesis</h3>
+          <p>The institution began its journey under the aegis of the <strong>Ved Mata Gayatri Shikshan Samiti</strong> (founded in 2007) as Dev Sanskriti Mahavidyalaya. It subsequently expanded as the <em>Dev Sanskriti University of Education & Technology</em> (2011–2012) and evolved into its current stature as Dev Sanskriti Vishwavidyalaya (DSVV), Chhattisgarh.</p>
+        </div>
+        <div class="article-section">
+          <h3>Location & Campus Setting</h3>
+          <p>Located at <strong>Sector-24, Block 7B, Ground Floor, Nawa Raipur Atal Nagar, Raipur, Chhattisgarh - 492018, India</strong>. The campus is easily accessible from major transportation hubs in Raipur.</p>
+          <p>The campus features a sprawling, eco-conscious, plastic-free and tobacco-free environment with landscaped gardens, open green spaces, dedicated vehicle sheds, and secure perimeters.</p>
+        </div>
+        <div class="article-section">
+          <h3>Campus Infrastructure & Facilities</h3>
+          <p>Our campus provides modern classrooms, interactive smart rooms, and specialized computing and engineering laboratories. The central library is well-stocked with extensive print and digital resources. For physical and mental well-being, we offer dedicated yoga practice halls, meditation facilities, and sports grounds/courts for cricket, volleyball, and indoor games.</p>
+          <p>General amenities include a multi-purpose auditorium, student cafeteria, campus-wide Wi-Fi, RO water purifiers, and regular transport connectivity connecting Raipur and surrounding areas.</p>
+        </div>
+        <div class="article-section">
+          <h3>Academic Achievements & Faculty</h3>
+          <p>We take pride in our experienced and research-oriented faculty body that undergoes regular Faculty Development Programs (FDPs) and research initiatives, with several members actively pursuing doctoral studies. Our structured <strong>Internal Quality Assurance Cell (IQAC)</strong> drives continuous curriculum modernization.</p>
+          <p>DSVV has achieved top university rank distinctions in the B.Ed. program across multiple academic sessions (2009–10, 2010–11, and 2017–18) and regularly hosts national workshops, webinars, guest lectures, and educational/spiritual exposure tours.</p>
+        </div>
+        <div class="article-section">
+          <h3>Skill Development & Community Outreach</h3>
+          <p>We provide regular student enrichment modules covering spoken English, advanced computer skills, and yogic science. Through extension programs for rural development, we lead environmental initiatives such as vermicompost preparation and sustainable pesticide management workshops for government schools within a 10 km radius.</p>
+          <p>DSVV holds active academic partnerships and MoUs with regional colleges (including Bori Govt. College, Govt. College Dongargarh, Shri Shankaracharya/S. Swaroopanand institutions, and Sai College Bhilai) for academic exchange and collaboration.</p>
+        </div>
+        <div class="article-section">
+          <h3>Campus Culture & Student Welfare</h3>
+          <p>We maintain a strict zero-tolerance policy against misconduct, maintaining an unblemished record with zero reported incidents of ragging or harassment. DSVV fosters a vibrant, culturally rich, and inclusive campus life that unites students across diverse backgrounds through regular cultural festivals, national celebrations, and community-driven events.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer role="contentinfo">
+    <div class="footer-container">
+      <div class="footer-col">
+        <img src="Dev_Sanskriti_Vishwavidyalaya Logo.png" alt="DSVV Logo" class="footer-logo">
+        <p>Dev Sanskriti Vishwavidyalaya - A premier university dedicated to the integration of scientific education with cultural and spiritual values.</p>
+      </div>
+      <div class="footer-col">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="programs.html">Academic Programs</a></li>
+          <li><a href="academics.html">Academics</a></li>
+          <li><a href="why-choose.html">Why Choose DSVV</a></li>
+          <li><a href="gallery.html">Campus Gallery</a></li>
+          <li><a href="about.html">About DSVV</a></li>
+          <li><a href="naac.html">NAAC Approved</a></li>
+          <li><a href="ncte.html">NCTE Recognition</a></li>
+          <li><a href="ugc.html">UGC Commission</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>Contact Us</h3>
+        <p><i class="fas fa-map-marker-alt"></i> Sector-24, Block 7B, Ground Floor, Nawa Raipur Atal Nagar, Raipur, Chhattisgarh - 492018, India</p>
+        <p><i class="fas fa-envelope"></i> <a href="mailto:registrar@devsanskritivishwavidyalaya.com">registrar@devsanskritivishwavidyalaya.com</a></p>
+      </div>
+      <div class="footer-col">
+        <h3>Connect With Us</h3>
+        <div class="social-links">
+          <a href="https://www.facebook.com/dsvvofficial" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://twitter.com/dsvvofficial" target="_blank"><i class="fab fa-twitter"></i></a>
+          <a href="https://www.instagram.com/dsvvofficial/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.youtube.com/channel/UC5OXRsDLXxKgIk9x11AwgqQ" target="_blank"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Dev Sanskriti Vishwavidyalaya (DSVV), Raipur, Chhattisgarh, India. All Rights Reserved.</p>
+      <p>A Premier University for Holistic Education | UGC Recognized | NAAC Accredited</p>
+    </div>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
