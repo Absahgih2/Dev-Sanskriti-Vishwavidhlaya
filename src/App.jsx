@@ -1189,19 +1189,39 @@ export default function App() {
                         ) : (
                           courses.map(c => (
                             <div key={c.name} className="course-item-row">
-                              <div>
+                              <div style={{ flex: 1 }}>
                                 <strong>{c.name}</strong>
                                 <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>
                                   Type: <span style={{ textTransform: 'capitalize' }}>{c.type}</span>
                                 </div>
+                                <div className="terms-badges-row" style={{ marginTop: '6px' }}>
+                                  {Object.keys(c.terms).map(term => (
+                                    <span key={term} className="term-badge">
+                                      {term}: {c.terms[term].length} Subjects
+                                    </span>
+                                  ))}
+                                </div>
                               </div>
-                              <div className="terms-badges-row">
-                                {Object.keys(c.terms).map(term => (
-                                  <span key={term} className="term-badge">
-                                    {term}: {c.terms[term].length} Subjects
-                                  </span>
-                                ))}
-                              </div>
+                              <button
+                                className="btn btn-danger btn-sm"
+                                style={{ padding: '6px 10px', fontSize: '11px', flexShrink: 0 }}
+                                onClick={async () => {
+                                  if (!confirm(`Delete course "${c.name}"? This cannot be undone.`)) return;
+                                  try {
+                                    const res = await fetch(`/api/courses/${encodeURIComponent(c.name)}`, { method: 'DELETE' });
+                                    if (res.ok) {
+                                      await fetchData();
+                                    } else {
+                                      const data = await res.json();
+                                      alert(data.error || 'Failed to delete course');
+                                    }
+                                  } catch (err) {
+                                    alert('Error connecting to server');
+                                  }
+                                }}
+                              >
+                                <Trash2 size={14} /> Delete
+                              </button>
                             </div>
                           ))
                         )}

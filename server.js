@@ -283,6 +283,19 @@ app.get('/api/courses', (req, res) => {
   res.json(db.courses);
 });
 
+// Delete a course by name
+app.delete('/api/courses/:name', (req, res) => {
+  const db = readDB();
+  const courseName = decodeURIComponent(req.params.name);
+  const idx = db.courses.findIndex(c => c.name.toLowerCase() === courseName.toLowerCase());
+  if (idx === -1) {
+    return res.status(404).json({ error: 'Course not found' });
+  }
+  db.courses.splice(idx, 1);
+  writeDB(db);
+  res.json({ success: true, courses: db.courses });
+});
+
 // Helper to generate next Roll Number
 function generateRollNumber(db) {
   if (db.settings.lastRollNo) {
