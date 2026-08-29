@@ -75,9 +75,10 @@ export const DEFAULT_STUDENTS = [
     motherName: "SUNITA BAGH",
     dob: "15/05/2002",
     course: "BACHELOR OF SCIENCE (B.SC.)",
-    session: "2023-2026",
+    session: "2024-2026",
+    email: "aashish.bagh@example.com",
     rollNo: 231456,
-    enrollmentNo: "2022231456",
+    enrollmentNo: "2023231456",
     photo: "",
     isPublished: true,
     marksheets: {
@@ -126,6 +127,20 @@ export const DEFAULT_STUDENTS = [
         "4th Semester": true, "5th Semester": true, "6th Semester": true
       }
     }
+  }
+];
+
+export const DEFAULT_CENTERS = [
+  {
+    id: "ctr-1",
+    centerCode: "DSVV-CTR-01",
+    centerName: "DSVV RAIPUR REGIONAL CENTER",
+    coordinatorName: "DR. SURESH SHARMA",
+    email: "center.raipur@devsanskritivishwavidyalaya.com",
+    phone: "+91-9876543210",
+    password: "center@2026",
+    status: "approved",
+    createdAt: "2026-08-20"
   }
 ];
 
