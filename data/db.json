@@ -1,0 +1,234 @@
+{
+  "students": [
+    {
+      "id": "1788003278269",
+      "name": "AASHISH",
+      "fatherName": "PITAMBAR",
+      "motherName": "RANI",
+      "dob": "01/01/1992",
+      "rollNo": "739157",
+      "enrollmentNo": "2023974164",
+      "course": "DIPLOMA IN BUSINESS MANAGEMENT",
+      "session": "2024",
+      "photo": "/uploads/photo-1788003258168-596769756.png",
+      "marksheets": {
+        "1st Year": {
+          "dmcNo": "3688",
+          "issueDate": "11-08-2024",
+          "marks": {
+            "DBM 101": 63,
+            "DBM 102": 49,
+            "DBM 103": 80,
+            "DBM 104": 79,
+            "DBM 105": 69,
+            "DBM 106": 52,
+            "DBM 107": 67,
+            "DBM 108": 47,
+            "DBM 109": 48,
+            "DBM 110": 69,
+            "DBM 111": 77,
+            "DBM 112": 80
+          },
+          "isPublished": false
+        },
+        "2nd Year": {
+          "dmcNo": "3689",
+          "issueDate": "11-08-2024",
+          "marks": {
+            "DBM 201": 51,
+            "DBM 202": 66,
+            "DBM 203": 66,
+            "DBM 204": 66,
+            "DBM 205": 50,
+            "DBM 206": 66,
+            "DBM 207": 73,
+            "DBM 208": 66,
+            "DBM 209": 45,
+            "DBM 210": 72,
+            "DBM 211": 47,
+            "DBM 212": 76
+          },
+          "isPublished": false
+        }
+      },
+      "publishedDocs": {
+        "idCard": false,
+        "marksheets": {
+          "1st Year": false,
+          "2nd Year": false
+        },
+        "admitCards": {
+          "1st Year": false,
+          "2nd Year": false
+        },
+        "results": {
+          "1st Year": true,
+          "2nd Year": true
+        }
+      },
+      "isPublished": true,
+      "createdAt": "2026-08-29T11:34:38.269Z"
+    }
+  ],
+  "courses": [
+    {
+      "name": "DIPLOMA IN BUSINESS MANAGEMENT",
+      "type": "year",
+      "terms": {
+        "1st Year": [
+          {
+            "code": "DBM 101",
+            "name": "PRINCIPLES OF MANAGEMENT",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 102",
+            "name": "BUSINESS COMMUNICATION & PERSONALITY DEVELOPMENT",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 103",
+            "name": "BUSINESS ECONOMICS",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 104",
+            "name": "FINANCIAL ACCOUNTING",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 105",
+            "name": "MARKETING MANAGEMENT",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 106",
+            "name": "HUMAN RESOURCE MANAGEMENT",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 107",
+            "name": "BUSINESS MATHEMATICS & STATISTICS",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 108",
+            "name": "COMPUTER APPLICATIONS IN BUSINESS",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 109",
+            "name": "BUSINESS ENVIRONMENT & ENTREPRENEURSHIP",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 110",
+            "name": "ENVIRONMENTAL STUDIES & BUSINESS ETHICS",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 111",
+            "name": "PROJECT/ VIVA",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 112",
+            "name": "PRACTICAL",
+            "maxMarks": 100,
+            "minMarks": 40
+          }
+        ],
+        "2nd Year": [
+          {
+            "code": "DBM 201",
+            "name": "FINANCIAL MANAGEMENT",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 202",
+            "name": "OPERATIONS & PRODUCTION MANAGEMENT",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 203",
+            "name": "SALES & DISTRIBUTION MANAGEMENT",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 204",
+            "name": "CUSTOMER RELATIONSHIP MANAGEMENT (CRM)",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 205",
+            "name": "BUSINESS LAW",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 206",
+            "name": "E-COMMERCE & DIGITAL BUSINESS",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 207",
+            "name": "SUPPLY CHAIN & LOGISTICS MANAGEMENT",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 208",
+            "name": "STRATEGIC MANAGEMENT",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 209",
+            "name": "LEADERSHIP & ORGANIZATIONAL BEHAVIOUR",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 210",
+            "name": "BUSINESS PROJECT & ENTREPRENEURSHIP DEVELOPMENT",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 211",
+            "name": "PROJECT/ VIVA",
+            "maxMarks": 100,
+            "minMarks": 40
+          },
+          {
+            "code": "DBM 212",
+            "name": "PRACTICAL",
+            "maxMarks": 100,
+            "minMarks": 40
+          }
+        ]
+      }
+    }
+  ],
+  "settings": {
+    "lastRollNo": 739157,
+    "lastEnrollSuffix": 974164,
+    "lastDmcNo": 3689
+  }
+}
