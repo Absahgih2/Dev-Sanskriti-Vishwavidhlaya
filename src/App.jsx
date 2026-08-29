@@ -26,7 +26,13 @@ export default function App() {
   const [loginLoading, setLoginLoading] = useState(false);
 
   // Navigation View: 'admin' or 'portal'
-  const [currentView, setCurrentView] = useState('admin');
+  const getInitialView = () => {
+    const params = new URLSearchParams(window.location.search);
+    const view = params.get('view');
+    if (view === 'portal') return 'portal';
+    return 'admin';
+  };
+  const [currentView, setCurrentView] = useState(getInitialView());
   
   // Database States
   const [courses, setCourses] = useState([]);
@@ -575,13 +581,9 @@ export default function App() {
           </form>
           
           <div className="login-footer">
-            <a href="http://127.0.0.1:5500/index.html" target="_blank" className="back-to-website-link">
+            <a href="https://dev-sanskriti-vishwavidhlaya.onrender.com" target="_blank" className="back-to-website-link">
               <Globe size={14} /> Back to Main Website
             </a>
-            <div className="login-credentials">
-              <p>Admin: admin / dsvv@2024</p>
-              <p>Center: center / dsvv@2024</p>
-            </div>
           </div>
         </div>
       </div>
