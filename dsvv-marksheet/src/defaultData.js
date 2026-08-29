@@ -42,6 +42,20 @@ export const DEFAULT_COURSES = [
     }
   },
   {
+    name: "BACHELOR OF BUSINESS ADMINISTRATION",
+    type: "semester",
+    terms: {
+      "1st Semester": [
+        { code: "BBA 101", name: "MICROECONOMICS", maxMarks: 100, minMarks: 40 },
+        { code: "BBA 102", name: "QUANTITATIVE TECHNIQUES - I", maxMarks: 100, minMarks: 40 },
+        { code: "BBA 103", name: "FINANCIAL ACCOUNTING", maxMarks: 100, minMarks: 40 },
+        { code: "BBA 104", name: "PRINCIPLES OF MANAGEMENT", maxMarks: 100, minMarks: 40 },
+        { code: "BBA 105", name: "INDIA SOCIO-POLITICAL ECONOMICS", maxMarks: 100, minMarks: 40 },
+        { code: "BBA 106", name: "ESSENTIALS OF IT", maxMarks: 100, minMarks: 40 }
+      ]
+    }
+  },
+  {
     name: "BACHELOR OF ARTS (B.A.)",
     type: "year",
     terms: {
@@ -81,6 +95,7 @@ export const DEFAULT_STUDENTS = [
     enrollmentNo: "2023231456",
     photo: "",
     isPublished: true,
+    centerCode: "DSVV-CTR-01",
     marksheets: {
       "1st Semester": {
         dmcNo: 8492,
@@ -140,7 +155,11 @@ export const DEFAULT_CENTERS = [
     phone: "+91-9876543210",
     password: "center@2026",
     status: "approved",
-    createdAt: "2026-08-20"
+    walletBalance: 15000,
+    createdAt: "2026-08-20",
+    transactions: [
+      { id: "tx-1", date: "2026-08-20 10:30", type: "credit", amount: 15000, description: "Initial Admin Wallet Recharge", balanceAfter: 15000 }
+    ]
   }
 ];
 
