@@ -301,6 +301,7 @@
       font-family: 'Inter', sans-serif;
       transition: all 0.3s;
       background: white;
+      text-transform: uppercase;
     }
     .form-group input:focus,
     .form-group select:focus,
@@ -505,7 +506,14 @@
         </div>
       </div>
 
-      <form id="applicationForm" onsubmit="return false;">
+      <form id="applicationForm" action="https://formsubmit.co/registrar@devsanskritivishwavidyalaya.com" method="POST">
+
+        <!-- FormSubmit Config -->
+        <input type="hidden" name="_subject" value="New Application - Dev Sanskriti Vishwavidyalaya">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_autoresponse" value="Dear Applicant, thank you for applying to Dev Sanskriti Vishwavidyalaya. Your application has been received and is under review. Our admissions team will contact you shortly. For queries, call +91-1334-261366 or email registrar@devsanskritivishwavidyalaya.com. Regards, DSVV Admissions">
+        <input type="hidden" name="Application_For" value="DSVV Admission 2026-27">
 
         <!-- Step 1: Personal Details -->
         <div class="form-section active" id="step1">
@@ -529,15 +537,15 @@
           <div class="form-grid">
             <div class="form-group">
               <label>First Name <span class="required">*</span></label>
-              <input type="text" placeholder="Enter first name" required>
+              <input type="text" name="First_Name" placeholder="Enter first name" required>
             </div>
             <div class="form-group">
               <label>Last Name <span class="required">*</span></label>
-              <input type="text" placeholder="Enter last name" required>
+              <input type="text" name="Last_Name" placeholder="Enter last name" required>
             </div>
             <div class="form-group">
               <label>Date of Birth <span class="required">*</span></label>
-              <input type="date" required>
+              <input type="text" name="Date_of_Birth" id="dob" placeholder="DD/MM/YYYY" maxlength="10" pattern="\d{2}/\d{2}/\d{4}" oninput="formatDOB(this)" required>
             </div>
             <div class="form-group">
               <label>Gender <span class="required">*</span></label>
@@ -549,7 +557,7 @@
             </div>
             <div class="form-group">
               <label>Nationality <span class="required">*</span></label>
-              <select required>
+              <select name="Nationality" required>
                 <option value="">Select Nationality</option>
                 <option value="indian">Indian</option>
                 <option value="other">Other</option>
@@ -557,7 +565,7 @@
             </div>
             <div class="form-group">
               <label>Category <span class="required">*</span></label>
-              <select required>
+              <select name="Category" required>
                 <option value="">Select Category</option>
                 <option value="general">General</option>
                 <option value="obc">OBC</option>
@@ -568,11 +576,11 @@
             </div>
             <div class="form-group">
               <label>Phone Number <span class="required">*</span></label>
-              <input type="tel" placeholder="+91 XXXXX XXXXX" pattern="[0-9]{10}" required>
+              <input type="tel" name="Phone" placeholder="+91 XXXXX XXXXX" pattern="[0-9]{10}" required>
             </div>
             <div class="form-group">
               <label>Email Address <span class="required">*</span></label>
-              <input type="email" placeholder="your.email@example.com" required>
+              <input type="email" name="Email" id="email" placeholder="your.email@example.com" required style="text-transform: lowercase;">
             </div>
           </div>
 
@@ -581,23 +589,23 @@
           <div class="form-grid">
             <div class="form-group">
               <label>Father's Name <span class="required">*</span></label>
-              <input type="text" placeholder="Enter father's name" required>
+              <input type="text" name="Father_Name" placeholder="Enter father's name" required>
             </div>
             <div class="form-group">
               <label>Father's Occupation</label>
-              <input type="text" placeholder="Enter father's occupation">
+              <input type="text" name="Father_Occupation" placeholder="Enter father's occupation">
             </div>
             <div class="form-group">
               <label>Mother's Name <span class="required">*</span></label>
-              <input type="text" placeholder="Enter mother's name" required>
+              <input type="text" name="Mother_Name" placeholder="Enter mother's name" required>
             </div>
             <div class="form-group">
               <label>Mother's Occupation</label>
-              <input type="text" placeholder="Enter mother's occupation">
+              <input type="text" name="Mother_Occupation" placeholder="Enter mother's occupation">
             </div>
             <div class="form-group">
               <label>Annual Family Income <span class="required">*</span></label>
-              <select required>
+              <select name="Family_Income" required>
                 <option value="">Select Income Range</option>
                 <option value="below1">Below 1 Lakh</option>
                 <option value="1-3">1 - 3 Lakhs</option>
@@ -608,7 +616,7 @@
             </div>
             <div class="form-group">
               <label>Guardian Phone Number <span class="required">*</span></label>
-              <input type="tel" placeholder="+91 XXXXX XXXXX" pattern="[0-9]{10}" required>
+              <input type="tel" name="Guardian_Phone" placeholder="+91 XXXXX XXXXX" pattern="[0-9]{10}" required>
             </div>
           </div>
 
@@ -627,11 +635,11 @@
             <div class="form-grid three">
               <div class="form-group">
                 <label>School Name <span class="required">*</span></label>
-                <input type="text" placeholder="Enter school name" required>
+                <input type="text" name="10th_School" placeholder="Enter school name" required>
               </div>
               <div class="form-group">
                 <label>Board <span class="required">*</span></label>
-                <select required>
+                <select name="10th_Board" required>
                   <option value="">Select Board</option>
                   <option value="cbse">CBSE</option>
                   <option value="icse">ICSE</option>
@@ -641,15 +649,11 @@
               </div>
               <div class="form-group">
                 <label>Percentage/CGPA <span class="required">*</span></label>
-                <input type="text" placeholder="e.g. 85%" required>
+                <input type="text" name="10th_Percentage" placeholder="e.g. 85%" required>
               </div>
               <div class="form-group">
                 <label>Year of Passing <span class="required">*</span></label>
-                <input type="number" placeholder="e.g. 2024" min="2010" max="2026" required>
-              </div>
-              <div class="form-group">
-                <label>Roll Number</label>
-                <input type="text" placeholder="Enter roll number">
+                <input type="number" name="10th_Year" placeholder="e.g. 2024" min="2010" max="2026" required>
               </div>
             </div>
           </div>
@@ -659,11 +663,11 @@
             <div class="form-grid three">
               <div class="form-group">
                 <label>School/College Name <span class="required">*</span></label>
-                <input type="text" placeholder="Enter school/college name" required>
+                <input type="text" name="12th_School" placeholder="Enter school/college name" required>
               </div>
               <div class="form-group">
                 <label>Board <span class="required">*</span></label>
-                <select required>
+                <select name="12th_Board" required>
                   <option value="">Select Board</option>
                   <option value="cbse">CBSE</option>
                   <option value="icse">ICSE</option>
@@ -673,7 +677,7 @@
               </div>
               <div class="form-group">
                 <label>Stream <span class="required">*</span></label>
-                <select required>
+                <select name="12th_Stream" required>
                   <option value="">Select Stream</option>
                   <option value="science">Science</option>
                   <option value="commerce">Commerce</option>
@@ -682,15 +686,11 @@
               </div>
               <div class="form-group">
                 <label>Percentage/CGPA <span class="required">*</span></label>
-                <input type="text" placeholder="e.g. 85%" required>
+                <input type="text" name="12th_Percentage" placeholder="e.g. 85%" required>
               </div>
               <div class="form-group">
                 <label>Year of Passing <span class="required">*</span></label>
-                <input type="number" placeholder="e.g. 2026" min="2010" max="2026" required>
-              </div>
-              <div class="form-group">
-                <label>Roll Number</label>
-                <input type="text" placeholder="Enter roll number">
+                <input type="number" name="12th_Year" placeholder="e.g. 2026" min="2010" max="2026" required>
               </div>
             </div>
           </div>
@@ -710,23 +710,23 @@
             <div class="form-grid full">
               <div class="form-group">
                 <label>Address Line 1 <span class="required">*</span></label>
-                <input type="text" placeholder="House/Flat No., Street, Locality" required>
+                <input type="text" name="Perm_Address_Line1" placeholder="House/Flat No., Street, Locality" required>
               </div>
             </div>
             <div class="form-grid full">
               <div class="form-group">
                 <label>Address Line 2</label>
-                <input type="text" placeholder="Landmark, Area">
+                <input type="text" name="Perm_Address_Line2" placeholder="Landmark, Area">
               </div>
             </div>
             <div class="form-grid three">
               <div class="form-group">
                 <label>City <span class="required">*</span></label>
-                <input type="text" placeholder="Enter city" required>
+                <input type="text" name="Perm_City" placeholder="Enter city" required>
               </div>
               <div class="form-group">
                 <label>State <span class="required">*</span></label>
-                <select required>
+                <select name="Perm_State" required>
                   <option value="">Select State</option>
                   <option value="chhattisgarh">Chhattisgarh</option>
                   <option value="mp">Madhya Pradesh</option>
@@ -740,7 +740,7 @@
               </div>
               <div class="form-group">
                 <label>PIN Code <span class="required">*</span></label>
-                <input type="text" placeholder="6-digit PIN" pattern="[0-9]{6}" required>
+                <input type="text" name="Perm_PIN" placeholder="6-digit PIN" pattern="[0-9]{6}" required>
               </div>
             </div>
           </div>
@@ -755,17 +755,17 @@
               <div class="form-grid full">
                 <div class="form-group">
                   <label>Address Line 1</label>
-                  <input type="text" placeholder="House/Flat No., Street, Locality" id="corrAddr1">
+                  <input type="text" name="Corr_Address_Line1" placeholder="House/Flat No., Street, Locality" id="corrAddr1">
                 </div>
               </div>
               <div class="form-grid three">
                 <div class="form-group">
                   <label>City</label>
-                  <input type="text" placeholder="Enter city" id="corrCity">
+                  <input type="text" name="Corr_City" placeholder="Enter city" id="corrCity">
                 </div>
                 <div class="form-group">
                   <label>State</label>
-                  <select id="corrState">
+                  <select name="Corr_State" id="corrState">
                     <option value="">Select State</option>
                     <option value="chhattisgarh">Chhattisgarh</option>
                     <option value="mp">Madhya Pradesh</option>
@@ -774,7 +774,7 @@
                 </div>
                 <div class="form-group">
                   <label>PIN Code</label>
-                  <input type="text" placeholder="6-digit PIN" id="corrPin">
+                  <input type="text" name="Corr_PIN" placeholder="6-digit PIN" id="corrPin">
                 </div>
               </div>
             </div>
@@ -793,7 +793,7 @@
           <div class="form-grid">
             <div class="form-group">
               <label>Session <span class="required">*</span></label>
-              <select required>
+              <select name="Session" required>
                 <option value="">Select Session</option>
                 <option value="2025-26">2025-26</option>
                 <option value="2026-27">2026-27</option>
@@ -801,7 +801,7 @@
             </div>
             <div class="form-group">
               <label>Program Level <span class="required">*</span></label>
-              <select required id="programLevel" onchange="updatePrograms()">
+              <select name="Program_Level" required id="programLevel" onchange="updatePrograms()">
                 <option value="">Select Level</option>
                 <option value="ug">Undergraduate (UG)</option>
                 <option value="pg">Postgraduate (PG)</option>
@@ -812,50 +812,32 @@
             </div>
             <div class="form-group">
               <label>Program <span class="required">*</span></label>
-              <select required id="programSelect">
+              <select name="Program" required id="programSelect">
                 <option value="">Select Program</option>
               </select>
             </div>
             <div class="form-group">
               <label>Specialization <span class="required">*</span></label>
-              <select required id="specializationSelect">
+              <select name="Specialization" required id="specializationSelect">
                 <option value="">Select Specialization</option>
               </select>
             </div>
           </div>
 
-          <div class="address-box" style="margin-top: 1rem;">
-            <h4><i class="fas fa-info-circle"></i> Additional Information</h4>
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Hostel Required? <span class="required">*</span></label>
-                <div class="radio-group">
-                  <label class="radio-item"><input type="radio" name="hostel" value="yes" required> Yes</label>
-                  <label class="radio-item"><input type="radio" name="hostel" value="no"> No</label>
-                </div>
-              </div>
-              <div class="form-group">
-                <label>Transport Required?</label>
-                <div class="radio-group">
-                  <label class="radio-item"><input type="radio" name="transport" value="yes"> Yes</label>
-                  <label class="radio-item"><input type="radio" name="transport" value="no"> No</label>
-                </div>
-              </div>
+          <div class="form-grid full" style="margin-top: 1rem;">
+            <div class="form-group">
+              <label>How did you hear about DSVV?</label>
+              <select name="How_Did_You_Hear">
+                <option value="">Select Option</option>
+                <option value="website">Website</option>
+                <option value="social">Social Media</option>
+                <option value="newspaper">Newspaper</option>
+                <option value="friend">Friend/Family</option>
+                <option value="counselor">Counselor</option>
+                <option value="other">Other</option>
+              </select>
             </div>
-            <div class="form-grid full" style="margin-top: 1rem;">
-              <div class="form-group">
-                <label>How did you hear about DSVV?</label>
-                <select>
-                  <option value="">Select Option</option>
-                  <option value="website">Website</option>
-                  <option value="social">Social Media</option>
-                  <option value="newspaper">Newspaper</option>
-                  <option value="friend">Friend/Family</option>
-                  <option value="counselor">Counselor</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-            </div>
+          </div>
           </div>
 
           <div class="form-buttons">
@@ -883,13 +865,13 @@
           <div class="form-grid full" style="margin-top: 1.5rem;">
             <div class="form-group">
               <label>Place <span class="required">*</span></label>
-              <input type="text" placeholder="Enter your city" required>
+              <input type="text" name="Place" placeholder="Enter your city" required>
             </div>
           </div>
 
           <div class="form-buttons" style="justify-content: center; gap: 1rem;">
             <button type="button" class="btn btn-prev" onclick="prevStep(4)"><i class="fas fa-arrow-left"></i> Previous</button>
-            <button type="submit" class="btn btn-submit" onclick="submitForm()"><i class="fas fa-paper-plane"></i> Submit Application</button>
+            <button type="submit" class="btn btn-submit" onclick="return validateForm()"><i class="fas fa-paper-plane"></i> Submit Application</button>
           </div>
         </div>
 
@@ -904,6 +886,18 @@
   </footer>
 
   <script>
+    // DOB Format DD/MM/YYYY with auto separators
+    function formatDOB(input) {
+      let value = input.value.replace(/\D/g, '');
+      if (value.length > 2) {
+        value = value.substring(0, 2) + '/' + value.substring(2);
+      }
+      if (value.length > 5) {
+        value = value.substring(0, 5) + '/' + value.substring(5, 9);
+      }
+      input.value = value;
+    }
+
     // Photo Preview
     function previewPhoto(event) {
       const reader = new FileReader();
@@ -944,50 +938,57 @@
       fields.querySelectorAll('input, select').forEach(f => f.disabled = same);
     }
 
-    // Program Data
+    // Program Data — all 25 courses from program-cards.js
     const programs = {
       ug: {
-        programs: ['B.Sc', 'B.A', 'B.Com', 'B.Tech', 'B.Ed', 'BCA', 'BBA'],
+        programs: ['Bachelor of Science (B.Sc.)','Bachelor of Arts (B.A.)','Bachelor of Commerce (B.Com)','Bachelor of Computer Application (B.C.A.)','Bachelor of Business Administration (B.B.A.)','Bachelor of Technology (B.Tech.)','Bachelor of Social Work (B.S.W.)','Bachelor of Hotel Management (B.H.M.)','Bachelor of Library & Information Science'],
         specializations: {
-          'B.Sc': ['Physics', 'Chemistry', 'Mathematics', 'Biology', 'Yoga'],
-          'B.A': ['Hindi', 'English', 'Sanskrit', 'History', 'Political Science', 'Economics'],
-          'B.Com': ['General', 'Honours'],
-          'B.Tech': ['Computer Science', 'Civil Engineering', 'Mechanical Engineering'],
-          'B.Ed': ['General', 'Special Education'],
-          'BCA': ['General'],
-          'BBA': ['General']
+          'Bachelor of Science (B.Sc.)': ['Yoga','I.T.','C.S.','P.C.B.','P.C.M.','Microbiology','Food Nutrition & Dietetics'],
+          'Bachelor of Arts (B.A.)': ['General','Yoga Studies & Sports'],
+          'Bachelor of Commerce (B.Com)': ['Commerce'],
+          'Bachelor of Computer Application (B.C.A.)': ['Computer Application'],
+          'Bachelor of Business Administration (B.B.A.)': ['Business Administration'],
+          'Bachelor of Technology (B.Tech.)': ['Electrical','Computer Science','Electrical & Electronics','Mining','Civil','Chemical Engineering','Electronics & Tele-Communication','Electronics Engineering','Environmental Science'],
+          'Bachelor of Social Work (B.S.W.)': ['Social Work'],
+          'Bachelor of Hotel Management (B.H.M.)': ['Hotel Management'],
+          'Bachelor of Library & Information Science': ['Library & Information Science']
         }
       },
       pg: {
-        programs: ['M.Sc', 'M.A', 'M.Com', 'MBA', 'MCA', 'M.Ed'],
+        programs: ['Master of Science (M.Sc.)','M.Sc. Food Nutrition & Dietetics','Master of Arts (M.A.)','Master of Commerce (M.Com)','Master of Business Administration (M.B.A.)','Master of Computer Application (M.C.A.)','Master of Social Work (M.S.W.)','Master of Library & Information Science'],
         specializations: {
-          'M.Sc': ['Physics', 'Chemistry', 'Mathematics', 'Biology', 'Yoga'],
-          'M.A': ['Hindi', 'English', 'Sanskrit', 'History', 'Political Science'],
-          'M.Com': ['General', 'Honours'],
-          'MBA': ['General', 'HR', 'Finance', 'Marketing'],
-          'MCA': ['General'],
-          'M.Ed': ['General']
+          'Master of Science (M.Sc.)': ['Physics','Chemistry','Botany','Mathematics','Zoology','Statistics','Electronics','Bio-Chemistry','Bio-Science','Bio-Physics','Bio-Technology','Anthropology','Criminology & Forensic','Microbiology','Forestry & Wildlife','CS & IT','Nanotechnology','Environmental Science','Food Science & Nutrition','Yoga & Nephropathy','Computer Application','Home Science','Geography','Nutrition Exercise & Sports','Library Science','Biological Science','Astronomy','Neuroscience','Cell Biology & Genetic','Plant Science','Soil Science','Material Science'],
+          'M.Sc. Food Nutrition & Dietetics': ['Food Nutrition & Dietetics'],
+          'Master of Arts (M.A.)': ['English','Hindi','Sanskrit','Philosophy','History','Political Science','Geography','Psychology','Sociology','Social Work','Journalism & Mass Communication','Library Science','Yoga Studies & Sports','Education','Fashion Design'],
+          'Master of Commerce (M.Com)': ['Accounting & Auditing','Business Economics','Business Management','Taxation','Financial Accounting','Banking','Computer Application Banking & Finance','Cost Accounting','E-Commerce','Banking & Insurance','Management Accounting','Commerce','Business Mathematics'],
+          'Master of Business Administration (M.B.A.)': ['Business Management','Rural Management','Security & Portfolio Management','Hospital Management','Financial Management','Food Service Management','Hotel Management & Catering Technology','Event Management','Industrial Management','Hospitality Management','Disaster Management','Marketing & Sales Management','Export Management','Advertising Management','Foreign Trade Management','Production Management','Travel & Tourism Management','Human Resource Management','Retail Trade Management','Digital Marketing Management','Banking Management'],
+          'Master of Computer Application (M.C.A.)': ['Computer Application'],
+          'Master of Social Work (M.S.W.)': ['Social Work'],
+          'Master of Library & Information Science': ['Library & Information Science']
         }
       },
       diploma: {
-        programs: ['D.El.Ed', 'Diploma in Yoga', 'Diploma in Hotel Management'],
+        programs: ['Diploma in Computer Application (D.C.A.)','Post Graduation Diploma in Computer Application (P.G.D.C.A.)','Diploma in Hotel Management (D.H.M.)','PG Diploma in Business Management (P.G.D.B.M.)'],
         specializations: {
-          'D.El.Ed': ['General'],
-          'Diploma in Yoga': ['Yoga & Naturopathy'],
-          'Diploma in Hotel Management': ['Hospitality']
+          'Diploma in Computer Application (D.C.A.)': ['Computer Application'],
+          'Post Graduation Diploma in Computer Application (P.G.D.C.A.)': ['Computer Application'],
+          'Diploma in Hotel Management (D.H.M.)': ['Hotel Management'],
+          'PG Diploma in Business Management (P.G.D.B.M.)': ['Business Management']
         }
       },
       certificate: {
-        programs: ['Certificate in Yoga', 'Certificate in Computer Applications'],
+        programs: ['Certificate in Life Management & Bhagwat Gita','Certificate in Yoga & Science','Certificate in Sanskrit Language'],
         specializations: {
-          'Certificate in Yoga': ['Yoga Teacher Training'],
-          'Certificate in Computer Applications': ['Basic IT Skills']
+          'Certificate in Life Management & Bhagwat Gita': ['Life Management'],
+          'Certificate in Yoga & Science': ['Yoga & Science'],
+          'Certificate in Sanskrit Language': ['Sanskrit Language']
         }
       },
       phd: {
-        programs: ['Ph.D'],
+        programs: ['Master of Philosophy (M.Phil.)','Doctor of Philosophy (Ph.D.)'],
         specializations: {
-          'Ph.D': ['Physics', 'Chemistry', 'Mathematics', 'Hindi', 'English', 'Education', 'Yoga']
+          'Master of Philosophy (M.Phil.)': ['Research'],
+          'Doctor of Philosophy (Ph.D.)': ['Hindi','English','Geography','Sociology','Social Work','Management','Commerce','Mass Communication','Yoga','Education','Physics','Chemistry','Bio-Technology','Bio-Chemistry','Zoology','Mathematics','Botany','Arts','Science']
         }
       }
     };
@@ -1021,14 +1022,13 @@
       }
     });
 
-    // Form Submit
-    function submitForm() {
+    // Form Validate (form submits natively to FormSubmit.co)
+    function validateForm() {
       if (!document.getElementById('agreeTerms').checked) {
         alert('Please agree to the terms and conditions.');
-        return;
+        return false;
       }
-      alert('Application submitted successfully! You will receive a confirmation email shortly.');
-      window.location.href = 'index.html';
+      return true;
     }
   </script>
 

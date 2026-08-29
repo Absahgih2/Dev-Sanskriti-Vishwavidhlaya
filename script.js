@@ -170,7 +170,7 @@ function openCourseModal(programId) {
     ${specializationsHTML}
     ${feeTableHTML}
     <div class="modal-actions">
-      <button class="btn-primary" onclick="closeCourseModal(); document.getElementById('courses').scrollIntoView({behavior:'smooth'});"><i class="fas fa-paper-plane"></i> Apply for this Program</button>
+      <button class="btn-primary" onclick="closeCourseModal(); window.location.href='application-form.html';"><i class="fas fa-paper-plane"></i> Apply for this Program</button>
       ${pageButton}
     </div>
   `;
