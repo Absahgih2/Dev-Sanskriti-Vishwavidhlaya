@@ -84,11 +84,16 @@ export default function IdCardTemplate({ student, course, termName }) {
               <div className="idcard-body">
                 {/* Left Column: Photo & DOB */}
                 <div className="idcard-photo-box">
-                  {student.photo ? (
-                    <img src={student.photo} alt={student.name} className="idcard-photo-img" />
-                  ) : (
-                    <div className="idcard-no-photo">PHOTO</div>
-                  )}
+                  <img 
+                    src={student.photo || "student_photo.jpg"} 
+                    alt={student.name} 
+                    className="idcard-photo-img" 
+                    onError={(e) => {
+                      if (e.target.src.indexOf('student_photo.jpg') === -1) {
+                        e.target.src = 'student_photo.jpg';
+                      }
+                    }}
+                  />
                   <div className="idcard-dob-tag">DOB: {student.dob}</div>
                 </div>
 

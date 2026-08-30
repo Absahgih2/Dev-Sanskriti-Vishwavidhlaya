@@ -82,11 +82,16 @@ export default function AdmitCardTemplate({ student, course, termName }) {
             </table>
           </div>
           <div className="admit-photo-col">
-            {student.photo ? (
-              <img src={student.photo} alt="Student" className="admit-photo" />
-            ) : (
-              <div className="admit-no-photo">STUDENT PHOTO</div>
-            )}
+            <img 
+              src={student.photo || "student_photo.jpg"} 
+              alt="Student" 
+              className="admit-photo" 
+              onError={(e) => {
+                if (e.target.src.indexOf('student_photo.jpg') === -1) {
+                  e.target.src = 'student_photo.jpg';
+                }
+              }}
+            />
             <div className="admit-dob">DOB: {student.dob}</div>
           </div>
         </div>

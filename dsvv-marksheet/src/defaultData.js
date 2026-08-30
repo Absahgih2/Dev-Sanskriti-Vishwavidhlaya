@@ -93,7 +93,7 @@ export const DEFAULT_STUDENTS = [
     email: "aashish.bagh@example.com",
     rollNo: 231456,
     enrollmentNo: "2023231456",
-    photo: "",
+    photo: "student_photo.jpg",
     isPublished: true,
     centerCode: "DSVV-CTR-01",
     marksheets: {
@@ -154,7 +154,7 @@ export const DEFAULT_STUDENTS = [
     email: "ramesh.bagh@example.com",
     rollNo: 232151,
     enrollmentNo: "2023232151",
-    photo: "",
+    photo: "student_photo.jpg",
     isPublished: true,
     centerCode: "DSVV-CTR-01",
     marksheets: {

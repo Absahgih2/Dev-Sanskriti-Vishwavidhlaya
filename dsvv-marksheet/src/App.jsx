@@ -1936,7 +1936,15 @@ export default function App() {
                 </button>
                 <div className="hub-info">
                   <div className="hub-photo">
-                    {portalStudent.photo ? <img src={portalStudent.photo} alt="" /> : <User size={48} style={{ color: '#9ca3af' }} />}
+                    <img 
+                      src={portalStudent.photo || "student_photo.jpg"} 
+                      alt="" 
+                      onError={(e) => {
+                        if (e.target.src.indexOf('student_photo.jpg') === -1) {
+                          e.target.src = 'student_photo.jpg';
+                        }
+                      }}
+                    />
                   </div>
                   <div>
                     <h2>{portalStudent.name}</h2>
