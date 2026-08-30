@@ -142,6 +142,67 @@ export const DEFAULT_STUDENTS = [
         "4th Semester": true, "5th Semester": true, "6th Semester": true
       }
     }
+  },
+  {
+    id: "std-sample-2",
+    name: "RAMESH BAGH",
+    fatherName: "RAJESH BAGH",
+    motherName: "SUNITA BAGH",
+    dob: "12/08/2003",
+    course: "BACHELOR OF SCIENCE (B.SC.)",
+    session: "2024-2026",
+    email: "ramesh.bagh@example.com",
+    rollNo: 232151,
+    enrollmentNo: "2023232151",
+    photo: "",
+    isPublished: true,
+    centerCode: "DSVV-CTR-01",
+    marksheets: {
+      "1st Semester": {
+        dmcNo: 8510,
+        issueDate: "28-02-2024",
+        marks: { "BSC 101": 75, "BSC 102": 80, "BSC 103": 72, "BSC 104": 85 }
+      },
+      "2nd Semester": {
+        dmcNo: 8511,
+        issueDate: "25-08-2024",
+        marks: { "BSC 201": 78, "BSC 202": 82, "BSC 203": 76, "BSC 204": 88 }
+      },
+      "3rd Semester": {
+        dmcNo: 8512,
+        issueDate: "23-02-2025",
+        marks: { "BSC 301": 82, "BSC 302": 85, "BSC 303": 80, "BSC 304": 90 }
+      },
+      "4th Semester": {
+        dmcNo: 8513,
+        issueDate: "24-08-2025",
+        marks: { "BSC 401": 84, "BSC 402": 86, "BSC 403": 81, "BSC 404": 91 }
+      },
+      "5th Semester": {
+        dmcNo: 8514,
+        issueDate: "22-02-2026",
+        marks: { "BSC 501": 86, "BSC 502": 88, "BSC 503": 84, "BSC 504": 93 }
+      },
+      "6th Semester": {
+        dmcNo: 8515,
+        issueDate: "23-08-2026",
+        marks: { "BSC 601": 88, "BSC 602": 90, "BSC 603": 87, "BSC 604": 95 }
+      }
+    },
+    publishedDocs: {
+      marksheets: {
+        "1st Semester": true, "2nd Semester": true, "3rd Semester": true,
+        "4th Semester": true, "5th Semester": true, "6th Semester": true
+      },
+      admitCards: {
+        "1st Semester": true, "2nd Semester": true, "3rd Semester": true,
+        "4th Semester": true, "5th Semester": true, "6th Semester": true
+      },
+      results: {
+        "1st Semester": true, "2nd Semester": true, "3rd Semester": true,
+        "4th Semester": true, "5th Semester": true, "6th Semester": true
+      }
+    }
   }
 ];
 

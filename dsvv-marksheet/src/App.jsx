@@ -32,7 +32,21 @@ export default function App() {
 
   const [students, setStudents] = useState(() => {
     const saved = localStorage.getItem('dsvv_students');
-    return saved ? JSON.parse(saved) : DEFAULT_STUDENTS;
+    if (!saved) return DEFAULT_STUDENTS;
+    try {
+      const parsed = JSON.parse(saved);
+      const existingIds = new Set(parsed.map(s => s.id));
+      const existingRolls = new Set(parsed.map(s => String(s.rollNo)));
+      const merged = [...parsed];
+      DEFAULT_STUDENTS.forEach(ds => {
+        if (!existingIds.has(ds.id) && !existingRolls.has(String(ds.rollNo))) {
+          merged.push(ds);
+        }
+      });
+      return merged;
+    } catch {
+      return DEFAULT_STUDENTS;
+    }
   });
 
   const [centers, setCenters] = useState(() => {
@@ -737,8 +751,8 @@ export default function App() {
     setPortalError('');
     setPortalStudent(null);
     setPortalCourse(null);
-    if (!portalName.trim() || !portalSearchVal.trim()) {
-      setPortalError('Please enter both student name and Roll/Enrollment number.');
+    if (!portalName.trim() && !portalSearchVal.trim()) {
+      setPortalError('Please enter Student Name and/or Roll/Enrollment Number.');
       return;
     }
 
@@ -746,10 +760,25 @@ export default function App() {
     const q = portalSearchVal.trim().toLowerCase();
 
     const found = students.find(s => {
-      const nameMatch = s.name?.toLowerCase().includes(n);
-      const rollMatch = String(s.rollNo)?.toLowerCase() === q;
-      const enrollMatch = s.enrollmentNo?.toLowerCase() === q;
-      return nameMatch && (rollMatch || enrollMatch);
+      const sName = (s.name || '').toLowerCase().trim();
+      const sRoll = String(s.rollNo || '').toLowerCase().trim();
+      const sEnroll = String(s.enrollmentNo || '').toLowerCase().trim();
+
+      // If both name and roll/enroll are provided
+      if (n && q) {
+        const nameMatch = sName.includes(n) || n.includes(sName) || sName.split(' ').some(part => n.includes(part));
+        const rollMatch = sRoll === q || sEnroll === q || q.includes(sRoll) || q.includes(sEnroll);
+        return nameMatch && rollMatch;
+      }
+      // If only name provided
+      if (n && !q) {
+        return sName.includes(n) || n.includes(sName);
+      }
+      // If only roll/enroll provided
+      if (!n && q) {
+        return sRoll === q || sEnroll === q || q.includes(sRoll) || q.includes(sEnroll);
+      }
+      return false;
     });
 
     if (found) {
