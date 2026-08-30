@@ -515,38 +515,57 @@ export default function App() {
   // Download current document as JPG
   const downloadAsImage = async (filename = 'document') => {
     try {
-      // Find the document element to capture
-      const docElement = document.querySelector('.print-only-container > *') ||
-                        document.querySelector('.modal-document-frame > *') ||
-                        document.querySelector('.portal-doc-preview-panel > *');
+      // Find the document element to capture - try multiple selectors
+      const selectors = [
+        '.portal-doc-preview-panel .preview-scroll-wrapper > div',
+        '.modal-document-frame > div',
+        '.portal-docs-workspace .preview-scroll-wrapper > div',
+        '.portal-doc-preview-panel > div',
+        '.portal-doc-preview-panel',
+      ];
+      
+      let docElement = null;
+      for (const sel of selectors) {
+        const el = document.querySelector(sel);
+        if (el && el.innerHTML.trim().length > 0) {
+          docElement = el;
+          break;
+        }
+      }
       
       if (!docElement) {
-        alert('No document found to capture');
+        alert('No document found to capture. Please select a document tab first.');
         return;
       }
-
-      // Show loading state
-      const originalTitle = document.title;
-      document.title = 'Generating image...';
 
       const canvas = await html2canvas(docElement, {
         scale: 2,
         useCORS: true,
+        allowTaint: true,
         logging: false,
         backgroundColor: '#ffffff',
         width: docElement.scrollWidth,
         height: docElement.scrollHeight,
+        onclone: (clonedDoc) => {
+          // Ensure cloned element has proper sizing
+          const clonedEl = clonedDoc.querySelector('.portal-doc-preview-panel') ||
+                          clonedDoc.querySelector('.modal-document-frame');
+          if (clonedEl) {
+            clonedEl.style.overflow = 'visible';
+            clonedEl.style.height = 'auto';
+          }
+        }
       });
 
       const link = document.createElement('a');
       link.download = `${filename}.jpg`;
       link.href = canvas.toDataURL('image/jpeg', 0.95);
+      document.body.appendChild(link);
       link.click();
-
-      document.title = originalTitle;
+      document.body.removeChild(link);
     } catch (err) {
       console.error('Image generation failed:', err);
-      alert('Failed to generate image. Try using Print > Save as PDF instead.');
+      alert('Image generation failed. Use Print > Save as PDF as an alternative.');
     }
   };
 
