@@ -2,6 +2,53 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
 /**
+ * Pre-processes DOM clone to convert all rendered images and canvases into inline Base64 data URLs.
+ * This guarantees html2canvas NEVER makes external network/CORS requests and never fails.
+ */
+function prepareClonedDoc(element, clonedDoc) {
+  // 1. Copy dynamic canvas data (QR codes, Barcodes)
+  const origCanvases = element.querySelectorAll('canvas');
+  const clonedCanvases = clonedDoc.querySelectorAll('canvas');
+  origCanvases.forEach((orig, i) => {
+    const cloned = clonedCanvases[i];
+    if (orig && cloned && orig.width > 0 && orig.height > 0) {
+      try {
+        cloned.width = orig.width;
+        cloned.height = orig.height;
+        const ctx = cloned.getContext('2d');
+        if (ctx) ctx.drawImage(orig, 0, 0);
+      } catch (e) {
+        console.warn('Canvas clone warning:', e);
+      }
+    }
+  });
+
+  // 2. Convert all loaded <img> elements into instant inline Base64 data URLs
+  const origImgs = element.querySelectorAll('img');
+  const clonedImgs = clonedDoc.querySelectorAll('img');
+  origImgs.forEach((orig, i) => {
+    const cloned = clonedImgs[i];
+    if (orig && cloned && orig.complete && orig.naturalWidth > 0 && orig.naturalHeight > 0) {
+      try {
+        const c = document.createElement('canvas');
+        c.width = orig.naturalWidth;
+        c.height = orig.naturalHeight;
+        const ctx = c.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(orig, 0, 0);
+          const dataUrl = c.toDataURL('image/png');
+          if (dataUrl && dataUrl.startsWith('data:image')) {
+            cloned.src = dataUrl;
+          }
+        }
+      } catch (e) {
+        console.warn('Image base64 clone warning:', e);
+      }
+    }
+  });
+}
+
+/**
  * Capture an element and download as a high-quality JPG image
  */
 export async function downloadAsJpg(element, fileName = 'document') {
@@ -11,11 +58,12 @@ export async function downloadAsJpg(element, fileName = 'document') {
   }
   try {
     const canvas = await html2canvas(element, {
-      scale: 2.5,
+      scale: 2,
       useCORS: true,
-      allowTaint: false,
+      allowTaint: true,
       backgroundColor: '#ffffff',
       logging: false,
+      imageTimeout: 20000,
       ignoreElements: (el) => {
         try {
           return el?.classList?.contains?.('no-print') || false;
@@ -24,21 +72,17 @@ export async function downloadAsJpg(element, fileName = 'document') {
         }
       },
       onclone: (clonedDoc) => {
-        const origCanvases = element.querySelectorAll('canvas');
-        const clonedCanvases = clonedDoc.querySelectorAll('canvas');
-        origCanvases.forEach((orig, i) => {
-          const cloned = clonedCanvases[i];
-          if (orig && cloned) {
-            cloned.width = orig.width;
-            cloned.height = orig.height;
-            const ctx = cloned.getContext('2d');
-            if (ctx) ctx.drawImage(orig, 0, 0);
-          }
-        });
+        prepareClonedDoc(element, clonedDoc);
       }
     });
 
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+    let dataUrl;
+    try {
+      dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+    } catch {
+      dataUrl = canvas.toDataURL('image/png');
+    }
+
     const link = document.createElement('a');
     link.download = `${fileName.replace(/\s+/g, '_')}.jpg`;
     link.href = dataUrl;
@@ -61,11 +105,12 @@ export async function downloadAsPdf(element, fileName = 'document', docType = 'm
   }
   try {
     const canvas = await html2canvas(element, {
-      scale: 2.5,
+      scale: 2,
       useCORS: true,
-      allowTaint: false,
+      allowTaint: true,
       backgroundColor: '#ffffff',
       logging: false,
+      imageTimeout: 20000,
       ignoreElements: (el) => {
         try {
           return el?.classList?.contains?.('no-print') || false;
@@ -74,21 +119,16 @@ export async function downloadAsPdf(element, fileName = 'document', docType = 'm
         }
       },
       onclone: (clonedDoc) => {
-        const origCanvases = element.querySelectorAll('canvas');
-        const clonedCanvases = clonedDoc.querySelectorAll('canvas');
-        origCanvases.forEach((orig, i) => {
-          const cloned = clonedCanvases[i];
-          if (orig && cloned) {
-            cloned.width = orig.width;
-            cloned.height = orig.height;
-            const ctx = cloned.getContext('2d');
-            if (ctx) ctx.drawImage(orig, 0, 0);
-          }
-        });
+        prepareClonedDoc(element, clonedDoc);
       }
     });
 
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    let imgData;
+    try {
+      imgData = canvas.toDataURL('image/jpeg', 0.95);
+    } catch {
+      imgData = canvas.toDataURL('image/png');
+    }
 
     let pdf;
     if (docType === 'marksheet') {

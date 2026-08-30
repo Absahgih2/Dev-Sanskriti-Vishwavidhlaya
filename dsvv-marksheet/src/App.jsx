@@ -1948,46 +1948,58 @@ export default function App() {
               </div>
               
               <div className="portal-docs-workspace">
-                <div className="portal-docs-sidebar">
-                  <select value={portalActiveTerm} onChange={e => setPortalActiveTerm(e.target.value)}>
-                    {Object.keys(portalStudent.marksheets || {}).map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                  
-                  {(!portalStudent.publishedDocs?.marksheets || portalStudent.publishedDocs.marksheets[portalActiveTerm] !== false) && (
-                    <button className={`doc-tab ${portalActiveTab === 'marksheet' ? 'active' : ''}`} onClick={() => setPortalActiveTab('marksheet')}>
-                      <FileText size={18} /> Marksheet
-                    </button>
-                  )}
+                {/* Horizontal Top Studio Toolbar */}
+                <div className="portal-top-toolbar no-print">
+                  {/* Left: Document Tabs Switcher */}
+                  <div className="portal-tabs-group">
+                    {(!portalStudent.publishedDocs?.marksheets || portalStudent.publishedDocs.marksheets[portalActiveTerm] !== false) && (
+                      <button className={`portal-tab-btn ${portalActiveTab === 'marksheet' ? 'active' : ''}`} onClick={() => setPortalActiveTab('marksheet')}>
+                        <FileText size={16} /> Marksheet
+                      </button>
+                    )}
 
-                  {(!portalStudent.publishedDocs?.admitCards || portalStudent.publishedDocs.admitCards[portalActiveTerm] !== false) && (
-                    <button className={`doc-tab ${portalActiveTab === 'admit' ? 'active' : ''}`} onClick={() => setPortalActiveTab('admit')}>
-                      <Calendar size={18} /> Admit Card
-                    </button>
-                  )}
+                    {(!portalStudent.publishedDocs?.admitCards || portalStudent.publishedDocs.admitCards[portalActiveTerm] !== false) && (
+                      <button className={`portal-tab-btn ${portalActiveTab === 'admit' ? 'active' : ''}`} onClick={() => setPortalActiveTab('admit')}>
+                        <Calendar size={16} /> Admit Card
+                      </button>
+                    )}
 
-                  {(!portalStudent.publishedDocs?.results || portalStudent.publishedDocs.results[portalActiveTerm] !== false) && (
-                    <button className={`doc-tab ${portalActiveTab === 'result' ? 'active' : ''}`} onClick={() => setPortalActiveTab('result')}>
-                      <Globe size={18} /> Online Result
-                    </button>
-                  )}
+                    {(!portalStudent.publishedDocs?.results || portalStudent.publishedDocs.results[portalActiveTerm] !== false) && (
+                      <button className={`portal-tab-btn ${portalActiveTab === 'result' ? 'active' : ''}`} onClick={() => setPortalActiveTab('result')}>
+                        <Globe size={16} /> Online Result
+                      </button>
+                    )}
 
-                  <button className={`doc-tab ${portalActiveTab === 'idcard' ? 'active' : ''}`} onClick={() => setPortalActiveTab('idcard')}>
-                    <UserCheck size={18} /> Identity Card
-                  </button>
+                    <button className={`portal-tab-btn ${portalActiveTab === 'idcard' ? 'active' : ''}`} onClick={() => setPortalActiveTab('idcard')}>
+                      <UserCheck size={16} /> Identity Card
+                    </button>
+                  </div>
 
-                  <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <button className="btn-primary" style={{ width: '100%', margin: 0 }} onClick={() => window.print()}>
-                      <Printer size={16} style={{ marginRight: '6px' }} /> Print Document
+                  {/* Right: Term Selector + Print + Download JPG + Download PDF */}
+                  <div className="portal-actions-group">
+                    <select 
+                      className="portal-term-select" 
+                      value={portalActiveTerm} 
+                      onChange={e => setPortalActiveTerm(e.target.value)}
+                    >
+                      {Object.keys(portalStudent.marksheets || {}).map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+
+                    <button className="portal-action-btn portal-btn-print" onClick={() => window.print()}>
+                      <Printer size={15} /> Print
                     </button>
-                    <button className="btn-secondary" style={{ width: '100%', margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: '#0284c7', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: '8px', fontWeight: '600', fontSize: '13px' }} onClick={handlePortalDownloadJpg} disabled={isDownloading}>
-                      <Image size={16} /> {isDownloading ? 'Exporting...' : 'Download JPG'}
+
+                    <button className="portal-action-btn portal-btn-jpg" onClick={handlePortalDownloadJpg} disabled={isDownloading}>
+                      <Image size={15} /> {isDownloading ? 'Exporting...' : 'Download JPG'}
                     </button>
-                    <button className="btn-primary" style={{ width: '100%', margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: '#dc2626', padding: '10px 14px', borderRadius: '8px', fontWeight: '600', fontSize: '13px' }} onClick={handlePortalDownloadPdf} disabled={isDownloading}>
-                      <FileDown size={16} /> {isDownloading ? 'Exporting...' : 'Download PDF'}
+
+                    <button className="portal-action-btn portal-btn-pdf" onClick={handlePortalDownloadPdf} disabled={isDownloading}>
+                      <FileDown size={15} /> {isDownloading ? 'Exporting...' : 'Download PDF'}
                     </button>
                   </div>
                 </div>
                 
+                {/* Full-Width Studio Document Canvas */}
                 <div className="portal-doc-preview" ref={portalDocPreviewRef}>
                   {portalActiveTab === 'marksheet' && <MarksheetTemplate student={portalStudent} course={portalCourse} termName={portalActiveTerm} />}
                   {portalActiveTab === 'admit' && <AdmitCardTemplate student={portalStudent} course={portalCourse} termName={portalActiveTerm} />}
