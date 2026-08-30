@@ -1,17 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Search, UserPlus, UploadCloud, FileText, Calendar,
   Edit3, Trash2, Globe, Sliders, CheckCircle, Eye,
   Printer, ArrowLeft, User, Image, BookOpen,
   RefreshCw, X, AlertCircle, Building2, Home, Lock,
   LogOut, Check, Ban, Mail, Phone, ShieldCheck, UserCheck,
-  Wallet, CreditCard, DollarSign, PlusCircle, ArrowUpRight, ArrowDownLeft
+  Wallet, CreditCard, DollarSign, PlusCircle, ArrowUpRight, ArrowDownLeft,
+  FileDown, Download
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import MarksheetTemplate from './components/MarksheetTemplate';
+import MarksheetTemplate, { calculateSemesterDetails } from './components/MarksheetTemplate';
 import AdmitCardTemplate from './components/AdmitCardTemplate';
 import OnlineResultTemplate from './components/OnlineResultTemplate';
+import IdCardTemplate from './components/IdCardTemplate';
 import ImageCropper from './components/ImageCropper';
+import { downloadAsJpg, downloadAsPdf } from './utils/downloadDoc';
 import { DEFAULT_COURSES, DEFAULT_STUDENTS, DEFAULT_CENTERS, parseCSVClient } from './defaultData';
 
 export default function App() {
@@ -69,6 +72,14 @@ export default function App() {
   const [searchCourse, setSearchCourse] = useState('');
   const [searchSession, setSearchSession] = useState('');
 
+  // Selective Publishing State
+  const [publishingStudent, setPublishingStudent] = useState(null);
+  const [localPublishDocs, setLocalPublishDocs] = useState({
+    marksheets: {},
+    admitCards: {},
+    results: {}
+  });
+
   // Student Form State (Exact Reference Layout)
   const [formData, setFormData] = useState({
     name: '',
@@ -110,12 +121,53 @@ export default function App() {
   const [centerCourseFilter, setCenterCourseFilter] = useState('');
   const [centerSessionFilter, setCenterSessionFilter] = useState('');
   const [centerTopupRequestModal, setCenterTopupRequestModal] = useState(false);
-  const [centerTopupAmount, setCenterTopupAmount] = useState('');
 
   // Document Modal View State
   const [activeDocStudent, setActiveDocStudent] = useState(null);
   const [activeDocTab, setActiveDocTab] = useState('marksheet');
   const [activeDocTerm, setActiveDocTerm] = useState('');
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  // Download DOM refs
+  const docPreviewRef = useRef(null);
+  const portalDocPreviewRef = useRef(null);
+
+  // Document Export Handlers
+  const handleDownloadJpg = async () => {
+    if (!docPreviewRef.current || !activeDocStudent || isDownloading) return;
+    setIsDownloading(true);
+    const docName = `${activeDocStudent.rollNo}_${activeDocStudent.name}_${activeDocTab}_${activeDocTerm}`;
+    const targetEl = docPreviewRef.current.querySelector('.marksheet-a4-landscape, .admit-card-layout, .idcard-dual-wrapper, .online-result-container') || docPreviewRef.current.firstElementChild || docPreviewRef.current;
+    await downloadAsJpg(targetEl, docName);
+    setIsDownloading(false);
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!docPreviewRef.current || !activeDocStudent || isDownloading) return;
+    setIsDownloading(true);
+    const docName = `${activeDocStudent.rollNo}_${activeDocStudent.name}_${activeDocTab}_${activeDocTerm}`;
+    const targetEl = docPreviewRef.current.querySelector('.marksheet-a4-landscape, .admit-card-layout, .idcard-dual-wrapper, .online-result-container') || docPreviewRef.current.firstElementChild || docPreviewRef.current;
+    await downloadAsPdf(targetEl, docName, activeDocTab);
+    setIsDownloading(false);
+  };
+
+  const handlePortalDownloadJpg = async () => {
+    if (!portalDocPreviewRef.current || !portalStudent || isDownloading) return;
+    setIsDownloading(true);
+    const docName = `${portalStudent.rollNo}_${portalStudent.name}_${portalActiveTab}_${portalActiveTerm}`;
+    const targetEl = portalDocPreviewRef.current.querySelector('.marksheet-a4-landscape, .admit-card-layout, .idcard-dual-wrapper, .online-result-container') || portalDocPreviewRef.current.firstElementChild || portalDocPreviewRef.current;
+    await downloadAsJpg(targetEl, docName);
+    setIsDownloading(false);
+  };
+
+  const handlePortalDownloadPdf = async () => {
+    if (!portalDocPreviewRef.current || !portalStudent || isDownloading) return;
+    setIsDownloading(true);
+    const docName = `${portalStudent.rollNo}_${portalStudent.name}_${portalActiveTab}_${portalActiveTerm}`;
+    const targetEl = portalDocPreviewRef.current.querySelector('.marksheet-a4-landscape, .admit-card-layout, .idcard-dual-wrapper, .online-result-container') || portalDocPreviewRef.current.firstElementChild || portalDocPreviewRef.current;
+    await downloadAsPdf(targetEl, docName, portalActiveTab);
+    setIsDownloading(false);
+  };
 
   // Public Result Portal State
   const [portalName, setPortalName] = useState('');
@@ -156,6 +208,15 @@ export default function App() {
   const getTermNames = (course) => course ? Object.keys(course.terms || {}) : [];
   const getTermSubjects = (course, term) => (course && course.terms && course.terms[term]) || [];
 
+  const getAutoIssueDate = (sessionStr, courseName, term) => {
+    const c = courses.find(item => item.name.toLowerCase() === (courseName || '').toLowerCase());
+    const terms = c ? getTermNames(c) : [];
+    const tIdx = Math.max(0, terms.indexOf(term));
+    const totalTerms = terms.length > 0 ? terms.length : 1;
+    const { displayIssueDate } = calculateSemesterDetails(sessionStr, c?.type, term, tIdx, totalTerms);
+    return displayIssueDate;
+  };
+
   // ============================================================
   // AUTHENTICATION HANDLERS
   // ============================================================
@@ -165,7 +226,7 @@ export default function App() {
     const u = adminUsernameInput.trim();
     const p = adminPasswordInput.trim();
 
-    if (u.toUpperCase() === 'DEV SANSKRITI VISHWAVIDHLAYA' && p === 'dsvv@2026') {
+    if (u.toUpperCase() === 'DEV SANSKRITI VISHWAVIDYALAYA' && p === 'dsvv@2026') {
       setIsAdminLoggedIn(true);
       sessionStorage.setItem('dsvv_admin_logged_in', 'true');
       setAdminUsernameInput('');
@@ -314,22 +375,41 @@ export default function App() {
     confetti({ particleCount: 70, spread: 60 });
   };
 
-  const handleResetCenterWallet = (centerId) => {
-    if (!confirm('Reset this Center wallet balance to 0?')) return;
-    setCenters(prev => prev.map(c => {
-      if (c.id === centerId) {
-        const tx = {
-          id: `tx-${Date.now()}`,
-          date: new Date().toISOString().replace('T', ' ').slice(0, 16),
-          type: 'reset',
-          amount: -(c.walletBalance || 0),
-          description: 'Admin Balance Reset',
-          balanceAfter: 0
+  // ============================================================
+  // SELECTIVE PUBLISHING HANDLERS
+  // ============================================================
+  const startPublishDocs = (student) => {
+    setPublishingStudent(student);
+    const defaults = { marksheets: {}, admitCards: {}, results: {} };
+    const course = courses.find(c => c.name.toLowerCase() === student.course.toLowerCase());
+    const terms = course ? getTermNames(course) : Object.keys(student.marksheets || {});
+    terms.forEach(t => {
+      defaults.marksheets[t] = student.publishedDocs?.marksheets?.[t] ?? true;
+      defaults.admitCards[t] = student.publishedDocs?.admitCards?.[t] ?? true;
+      defaults.results[t] = student.publishedDocs?.results?.[t] ?? true;
+    });
+    setLocalPublishDocs(student.publishedDocs || defaults);
+  };
+
+  const submitPublishSettings = () => {
+    if (!publishingStudent) return;
+    const hasAny = Object.values(localPublishDocs.marksheets || {}).some(v => v) ||
+                   Object.values(localPublishDocs.admitCards || {}).some(v => v) ||
+                   Object.values(localPublishDocs.results || {}).some(v => v);
+
+    setStudents(prev => prev.map(s => {
+      if (s.id === publishingStudent.id) {
+        return {
+          ...s,
+          isPublished: hasAny,
+          publishedDocs: localPublishDocs
         };
-        return { ...c, walletBalance: 0, transactions: [tx, ...(c.transactions || [])] };
       }
-      return c;
+      return s;
     }));
+
+    setPublishingStudent(null);
+    confetti({ particleCount: 50, spread: 40 });
   };
 
   // ============================================================
@@ -352,10 +432,11 @@ export default function App() {
     });
     const c = courses[0];
     const firstTerm = c ? getTermNames(c)[0] : '';
+    const autoDate = getAutoIssueDate('2024-2026', c?.name, firstTerm);
     setSelectedTerm(firstTerm || '');
     setFormMarksheets({});
     setFormDmcNumbers({ [firstTerm]: Math.floor(1000 + Math.random() * 9000) });
-    setFormIssueDates({ [firstTerm]: '28-02-2026' });
+    setFormIssueDates({ [firstTerm]: autoDate });
     setTargetPercentage('');
     setEditingStudentId(null);
     setIsCompleteEdit(false);
@@ -480,8 +561,9 @@ export default function App() {
     if (!formDmcNumbers[selectedTerm]) {
       setFormDmcNumbers(prev => ({ ...prev, [selectedTerm]: Math.floor(1000 + Math.random() * 9000) }));
     }
-    if (!formIssueDates[selectedTerm]) {
-      setFormIssueDates(prev => ({ ...prev, [selectedTerm]: '28-02-2026' }));
+    if (!formIssueDates[selectedTerm] || formIssueDates[selectedTerm] === '') {
+      const autoDate = getAutoIssueDate(formData.session, formData.courseName, selectedTerm);
+      setFormIssueDates(prev => ({ ...prev, [selectedTerm]: autoDate }));
     }
   };
 
@@ -492,7 +574,6 @@ export default function App() {
       return;
     }
 
-    // Check Center Admission Fee if registered via Center
     const isCenterAction = currentView === 'center' && loggedCenter;
     const admissionFee = 500;
 
@@ -508,9 +589,10 @@ export default function App() {
     const marksheetsData = {};
 
     terms.forEach((t) => {
+      const autoDate = getAutoIssueDate(formData.session, formData.courseName, t);
       marksheetsData[t] = {
         dmcNo: formDmcNumbers[t] || Math.floor(1000 + Math.random() * 9000),
-        issueDate: formIssueDates[t] || '28-02-2026',
+        issueDate: formIssueDates[t] || autoDate,
         marks: formMarksheets[t] || {}
       };
     });
@@ -553,7 +635,6 @@ export default function App() {
 
       setStudents(prev => [newStudent, ...prev]);
 
-      // Deduct wallet fee if registered by Center
       if (isCenterAction) {
         const newBal = (loggedCenter.walletBalance || 0) - admissionFee;
         const tx = {
@@ -582,6 +663,16 @@ export default function App() {
       setCenterTab('candidates');
     }
     resetForm();
+  };
+
+  
+  const handleDeleteCourse = (courseName) => {
+    if (!confirm(`Are you sure you want to delete the course "${courseName}" and its semester curriculum?`)) return;
+    setCourses(prev => {
+      const updated = prev.filter(c => c.name.toLowerCase() !== courseName.toLowerCase());
+      localStorage.setItem('dsvv_courses', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const handleDeleteStudent = (id) => {
@@ -662,6 +753,10 @@ export default function App() {
     });
 
     if (found) {
+      if (!found.isPublished) {
+        setPortalError('Documents for this student are currently in draft state and have not been published by the University.');
+        return;
+      }
       const course = courses.find(c => c.name.toLowerCase() === found.course.toLowerCase());
       setPortalStudent(found);
       setPortalCourse(course || { name: found.course, terms: {} });
@@ -794,7 +889,7 @@ export default function App() {
             </aside>
 
             <main className="admin-content-panel">
-              {/* DASHBOARD TAB */}
+              {/* DASHBOARD TAB (EXACT GURUKUL CARD LAYOUT WITH PUBLISH, PARTIAL, COMPLETE) */}
               {adminTab === 'dashboard' && (
                 <div className="tab-content">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -803,54 +898,119 @@ export default function App() {
                       <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>Total registered students: {students.length}</p>
                     </div>
                     <button className="btn-primary" onClick={() => { resetForm(); setAdminTab('add-student'); }}>
-                      <UserPlus size={16} style={{ marginRight: '6px', verticalAlign: 'middle' }} /> Add Student
+                      <UserPlus size={16} style={{ marginRight: '6px', verticalAlign: 'middle' }} /> Register Student
                     </button>
                   </div>
                   
                   <div className="search-filters" style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
-                    <div style={{ flex: 1 }}>
-                      <input style={{ width: '100%', padding: '10px 14px', borderRadius: '6px', border: '1px solid #ccc' }} placeholder="Filter by Course..." value={searchCourse} onChange={e => setSearchCourse(e.target.value)} />
+                    <div style={{ flex: 1, position: 'relative' }}>
+                      <input style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1' }} placeholder="Search by Course..." value={searchCourse} onChange={e => setSearchCourse(e.target.value)} />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <input style={{ width: '100%', padding: '10px 14px', borderRadius: '6px', border: '1px solid #ccc' }} placeholder="Filter by Session..." value={searchSession} onChange={e => setSearchSession(e.target.value)} />
+                      <input style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1' }} placeholder="Filter by Session..." value={searchSession} onChange={e => setSearchSession(e.target.value)} />
                     </div>
                   </div>
 
                   {filteredStudents.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '40px', background: '#fff', borderRadius: '8px' }}>
+                    <div style={{ textAlign: 'center', padding: '40px', background: '#fff', borderRadius: '12px' }}>
                       <User size={48} style={{ color: '#ccc', marginBottom: '10px' }} />
                       <p>No student records found.</p>
                     </div>
                   ) : (
-                    <div className="student-grid">
+                    <div className="student-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
                       {filteredStudents.map(s => (
-                        <div key={s.id} className="student-card">
-                          {s.photo ? (
-                            <img src={s.photo} alt={s.name} className="student-card-photo" />
-                          ) : (
-                            <div className="student-card-photo" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6' }}>
-                              <User size={32} style={{ color: '#9ca3af' }} />
+                        <div key={s.id} style={{ background: '#fff', borderRadius: '14px', padding: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                          
+                          {/* Student Header */}
+                          <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+                            <div style={{ width: '56px', height: '56px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              {s.photo ? (
+                                <img src={s.photo} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              ) : (
+                                <User size={28} style={{ color: '#94a3b8' }} />
+                              )}
                             </div>
-                          )}
-                          <h3 className="student-card-name">{s.name}</h3>
-                          <div className="student-card-detail">
-                            <p>Course: <strong>{s.course}</strong></p>
-                            <p>Session: {s.session}</p>
-                            <p>Enrollment: {s.enrollmentNo}</p>
-                            {s.centerCode && <p>Center: <span style={{ color: '#0d2149', fontWeight: '600' }}>{s.centerCode}</span></p>}
+                            <div>
+                              <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: '#0f172a' }}>{s.name}</h3>
+                              <span style={{ fontSize: '12px', color: '#64748b' }}>{s.session}</span>
+                            </div>
                           </div>
-                          <span className="student-card-roll">Roll No: {s.rollNo}</span>
-                          <div className="student-card-actions">
-                            <button className="btn-view" onClick={() => { setActiveDocStudent(s); const c = courses.find(x => x.name.toLowerCase() === s.course.toLowerCase()); setActiveDocTerm(getTermNames(c)[0] || ''); }}>
-                              <Printer size={12} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Documents
+
+                          {/* Student Details */}
+                          <div style={{ fontSize: '12.5px', color: '#334155', display: 'flex', flexDirection: 'column', gap: '5px', borderTop: '1px solid #f1f5f9', paddingTop: '10px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b' }}>Roll No:</span> <strong>{s.rollNo}</strong></div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b' }}>Enroll No:</span> <strong>{s.enrollmentNo}</strong></div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b' }}>Course:</span> <strong style={{ textAlign: 'right', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.course}</strong></div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                              <span style={{ color: '#64748b' }}>Status:</span>
+                              <span style={{
+                                padding: '2px 8px',
+                                borderRadius: '4px',
+                                fontSize: '10px',
+                                fontWeight: '700',
+                                textTransform: 'uppercase',
+                                background: s.isPublished ? '#dcfce7' : '#f1f5f9',
+                                color: s.isPublished ? '#166534' : '#64748b'
+                              }}>
+                                {s.isPublished ? 'PUBLISHED' : 'DRAFT'}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Action Buttons: View, Partial, Complete, Publish, Live, Delete */}
+                          <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+                            <button 
+                              className="btn-secondary" 
+                              style={{ padding: '6px 10px', fontSize: '11.5px' }}
+                              onClick={() => { setActiveDocStudent(s); const c = courses.find(x => x.name.toLowerCase() === s.course.toLowerCase()); setActiveDocTerm(getTermNames(c)[0] || ''); }}
+                              title="View and Print Documents"
+                            >
+                              <Eye size={13} style={{ marginRight: '3px', verticalAlign: 'middle' }} /> View
                             </button>
-                            <button className="btn-edit" onClick={() => startEdit(s, false)}>
-                              <Edit3 size={12} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Edit
+
+                            <button 
+                              className="btn-secondary" 
+                              style={{ padding: '6px 10px', fontSize: '11.5px' }}
+                              onClick={() => startEdit(s, false)}
+                              title="Partial Edit: Student Details & Marks"
+                            >
+                              <Edit3 size={13} style={{ marginRight: '3px', verticalAlign: 'middle' }} /> Partial
                             </button>
-                            <button className="btn-delete" onClick={() => handleDeleteStudent(s.id)}>
-                              <Trash2 size={12} />
+
+                            <button 
+                              className="btn-secondary" 
+                              style={{ padding: '6px 10px', fontSize: '11.5px' }}
+                              onClick={() => startEdit(s, true)}
+                              title="Complete Edit: Change Structure"
+                            >
+                              <Sliders size={13} style={{ marginRight: '3px', verticalAlign: 'middle' }} /> Complete
+                            </button>
+
+                            <button 
+                              className="btn-primary" 
+                              style={{ padding: '6px 12px', fontSize: '11.5px', background: '#0d2149' }}
+                              onClick={() => startPublishDocs(s)}
+                              title="Configure publishing settings for Student Web Portal"
+                            >
+                              <CheckCircle size={13} style={{ marginRight: '3px', verticalAlign: 'middle' }} /> Publish
+                            </button>
+
+                            {s.isPublished && (
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '11.5px', color: '#16a34a', fontWeight: '700' }} title="Live on Web Portal">
+                                <CheckCircle size={13} /> Live
+                              </span>
+                            )}
+
+                            <button 
+                              className="btn-delete" 
+                              style={{ padding: '6px 8px', marginLeft: 'auto' }}
+                              onClick={() => handleDeleteStudent(s.id)}
+                              title="Delete Record"
+                            >
+                              <Trash2 size={13} />
                             </button>
                           </div>
+
                         </div>
                       ))}
                     </div>
@@ -863,7 +1023,7 @@ export default function App() {
                 <div style={{ background: '#fff', borderRadius: '16px', padding: '36px 40px', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', maxWidth: '1080px', margin: '0 auto' }}>
                   <div style={{ marginBottom: '28px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
                     <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '700', color: '#0f172a' }}>
-                      {editingStudentId ? 'Edit Student Details' : 'Register New Student'}
+                      {editingStudentId ? (isCompleteEdit ? 'Complete Structure Edit' : 'Partial Student Edit') : 'Register New Student'}
                     </h2>
                     <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>
                       Sequential Roll/Enrollment numbering will auto-apply.
@@ -931,11 +1091,12 @@ export default function App() {
                             const cName = e.target.value;
                             const course = courses.find(c => c.name.toLowerCase() === cName.toLowerCase());
                             const firstTerm = course ? getTermNames(course)[0] : '';
+                            const autoDate = getAutoIssueDate(formData.session, cName, firstTerm);
                             setFormData(p => ({ ...p, courseName: cName }));
                             setSelectedTerm(firstTerm || '');
                             if (firstTerm && !formDmcNumbers[firstTerm]) {
                               setFormDmcNumbers(prev => ({ ...prev, [firstTerm]: Math.floor(1000 + Math.random() * 9000) }));
-                              setFormIssueDates(prev => ({ ...prev, [firstTerm]: '28-02-2026' }));
+                              setFormIssueDates(prev => ({ ...prev, [firstTerm]: autoDate }));
                             }
                           }} 
                           required
@@ -1037,9 +1198,12 @@ export default function App() {
                               onChange={e => {
                                 const t = e.target.value;
                                 setSelectedTerm(t);
+                                const autoDate = getAutoIssueDate(formData.session, formData.courseName, t);
                                 if (!formDmcNumbers[t]) {
                                   setFormDmcNumbers(prev => ({ ...prev, [t]: Math.floor(1000 + Math.random() * 9000) }));
-                                  setFormIssueDates(prev => ({ ...prev, [t]: '28-02-2026' }));
+                                }
+                                if (!formIssueDates[t]) {
+                                  setFormIssueDates(prev => ({ ...prev, [t]: autoDate }));
                                 }
                               }} 
                               style={{ padding: '8px 14px', borderRadius: '6px', border: '1.5px solid #cbd5e1', fontSize: '13px', background: '#fff' }}
@@ -1197,9 +1361,20 @@ export default function App() {
                       <h3>Available Courses ({courses.length})</h3>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '420px', overflowY: 'auto' }}>
                         {courses.map(c => (
-                          <div key={c.name} style={{ padding: '14px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#f8fafc' }}>
-                            <strong style={{ color: '#0d2149', fontSize: '14px' }}>{c.name}</strong>
-                            <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Type: {c.type?.toUpperCase()} | Terms: {Object.keys(c.terms || {}).length}</div>
+                          <div key={c.name} style={{ padding: '14px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+                            <div>
+                              <strong style={{ color: '#0d2149', fontSize: '14px' }}>{c.name}</strong>
+                              <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Type: {c.type?.toUpperCase()} | Terms: {Object.keys(c.terms || {}).length}</div>
+                            </div>
+                            <button 
+                              type="button"
+                              className="btn-delete" 
+                              style={{ padding: '6px 12px', fontSize: '12px', whiteSpace: 'nowrap' }} 
+                              onClick={() => handleDeleteCourse(c.name)}
+                              title="Delete Course"
+                            >
+                              <Trash2 size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Delete Course
+                            </button>
                           </div>
                         ))}
                       </div>
@@ -1403,7 +1578,6 @@ export default function App() {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  {/* Center Wallet Balance Pill */}
                   <div style={{ background: '#f0fdf4', border: '1.5px solid #bbf7d0', padding: '8px 16px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <Wallet size={20} style={{ color: '#16a34a' }} />
                     <div>
@@ -1466,6 +1640,7 @@ export default function App() {
                         <th style={{ padding: '10px 14px' }}>Session</th>
                         <th style={{ padding: '10px 14px', textAlign: 'center' }}>Admit Card</th>
                         <th style={{ padding: '10px 14px', textAlign: 'center' }}>Marksheet</th>
+                        <th style={{ padding: '10px 14px', textAlign: 'center' }}>ID Card</th>
                         <th style={{ padding: '10px 14px', textAlign: 'center' }}>Result</th>
                       </tr>
                     </thead>
@@ -1487,6 +1662,11 @@ export default function App() {
                             <td style={{ padding: '10px 14px', textAlign: 'center' }}>
                               <button className="btn-view" style={{ padding: '5px 12px', fontSize: '12px' }} onClick={() => { setActiveDocStudent(s); setActiveDocTerm(firstTerm); setActiveDocTab('marksheet'); }}>
                                 <FileText size={12} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Marksheet
+                              </button>
+                            </td>
+                            <td style={{ padding: '10px 14px', textAlign: 'center' }}>
+                              <button className="btn-view" style={{ padding: '5px 12px', fontSize: '12px' }} onClick={() => { setActiveDocStudent(s); setActiveDocTerm(firstTerm); setActiveDocTab('idcard'); }}>
+                                <UserCheck size={12} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> ID Card
                               </button>
                             </td>
                             <td style={{ padding: '10px 14px', textAlign: 'center' }}>
@@ -1743,23 +1923,46 @@ export default function App() {
                   <select value={portalActiveTerm} onChange={e => setPortalActiveTerm(e.target.value)}>
                     {Object.keys(portalStudent.marksheets || {}).map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
-                  <button className={`doc-tab ${portalActiveTab === 'marksheet' ? 'active' : ''}`} onClick={() => setPortalActiveTab('marksheet')}>
-                    <FileText size={18} /> Marksheet
+                  
+                  {(!portalStudent.publishedDocs?.marksheets || portalStudent.publishedDocs.marksheets[portalActiveTerm] !== false) && (
+                    <button className={`doc-tab ${portalActiveTab === 'marksheet' ? 'active' : ''}`} onClick={() => setPortalActiveTab('marksheet')}>
+                      <FileText size={18} /> Marksheet
+                    </button>
+                  )}
+
+                  {(!portalStudent.publishedDocs?.admitCards || portalStudent.publishedDocs.admitCards[portalActiveTerm] !== false) && (
+                    <button className={`doc-tab ${portalActiveTab === 'admit' ? 'active' : ''}`} onClick={() => setPortalActiveTab('admit')}>
+                      <Calendar size={18} /> Admit Card
+                    </button>
+                  )}
+
+                  {(!portalStudent.publishedDocs?.results || portalStudent.publishedDocs.results[portalActiveTerm] !== false) && (
+                    <button className={`doc-tab ${portalActiveTab === 'result' ? 'active' : ''}`} onClick={() => setPortalActiveTab('result')}>
+                      <Globe size={18} /> Online Result
+                    </button>
+                  )}
+
+                  <button className={`doc-tab ${portalActiveTab === 'idcard' ? 'active' : ''}`} onClick={() => setPortalActiveTab('idcard')}>
+                    <UserCheck size={18} /> Identity Card
                   </button>
-                  <button className={`doc-tab ${portalActiveTab === 'admit' ? 'active' : ''}`} onClick={() => setPortalActiveTab('admit')}>
-                    <Calendar size={18} /> Admit Card
-                  </button>
-                  <button className={`doc-tab ${portalActiveTab === 'result' ? 'active' : ''}`} onClick={() => setPortalActiveTab('result')}>
-                    <Globe size={18} /> Online Result
-                  </button>
-                  <button className="btn-primary" onClick={() => window.print()}>
-                    <Printer size={18} /> Print Document
-                  </button>
+
+                  <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <button className="btn-primary" style={{ width: '100%', margin: 0 }} onClick={() => window.print()}>
+                      <Printer size={16} style={{ marginRight: '6px' }} /> Print Document
+                    </button>
+                    <button className="btn-secondary" style={{ width: '100%', margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: '#0284c7', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: '8px', fontWeight: '600', fontSize: '13px' }} onClick={handlePortalDownloadJpg} disabled={isDownloading}>
+                      <Image size={16} /> {isDownloading ? 'Exporting...' : 'Download JPG'}
+                    </button>
+                    <button className="btn-primary" style={{ width: '100%', margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: '#dc2626', padding: '10px 14px', borderRadius: '8px', fontWeight: '600', fontSize: '13px' }} onClick={handlePortalDownloadPdf} disabled={isDownloading}>
+                      <FileDown size={16} /> {isDownloading ? 'Exporting...' : 'Download PDF'}
+                    </button>
+                  </div>
                 </div>
                 
-                <div className="portal-doc-preview">
+                <div className="portal-doc-preview" ref={portalDocPreviewRef}>
                   {portalActiveTab === 'marksheet' && <MarksheetTemplate student={portalStudent} course={portalCourse} termName={portalActiveTerm} />}
                   {portalActiveTab === 'admit' && <AdmitCardTemplate student={portalStudent} course={portalCourse} termName={portalActiveTerm} />}
+                  {portalActiveTab === 'idcard' && <IdCardTemplate student={portalStudent} course={portalCourse} termName={portalActiveTerm} />}
                   {portalActiveTab === 'result' && <OnlineResultTemplate student={portalStudent} course={portalCourse} termName={portalActiveTerm} />}
                 </div>
               </div>
@@ -1771,6 +1974,90 @@ export default function App() {
       {/* ============================================================
           MODALS
          ============================================================ */}
+
+      {/* SELECTIVE PUBLISHING OPTIONS MODAL (GURUKUL WORKFLOW) */}
+      {publishingStudent && (
+        <div className="modal-overlay" onClick={() => setPublishingStudent(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '540px', maxHeight: '85vh', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#0d2149' }}>Publishing Options: {publishingStudent.name}</h3>
+                <span style={{ fontSize: '12px', color: '#64748b' }}>Roll No: {publishingStudent.rollNo}</span>
+              </div>
+              <button className="modal-close-btn" onClick={() => setPublishingStudent(null)}><X size={18} /></button>
+            </div>
+
+            <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '16px' }}>
+              Select which student documents should be visible and accessible on the public web verification portal.
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {Object.keys(publishingStudent.marksheets || {}).map(term => (
+                <div key={term} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '16px' }}>
+                  <strong style={{ fontSize: '13.5px', color: '#0d2149', display: 'block', marginBottom: '12px' }}>
+                    {term.toUpperCase()}
+                  </strong>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', fontSize: '13px' }}>
+                      <span>Marksheet Statement</span>
+                      <input 
+                        type="checkbox"
+                        style={{ width: '17px', height: '17px', cursor: 'pointer' }}
+                        checked={localPublishDocs.marksheets?.[term] ?? true}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          setLocalPublishDocs(prev => ({
+                            ...prev,
+                            marksheets: { ...(prev.marksheets || {}), [term]: checked }
+                          }));
+                        }}
+                      />
+                    </label>
+
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', fontSize: '13px' }}>
+                      <span>Examination Admit Card</span>
+                      <input 
+                        type="checkbox"
+                        style={{ width: '17px', height: '17px', cursor: 'pointer' }}
+                        checked={localPublishDocs.admitCards?.[term] ?? true}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          setLocalPublishDocs(prev => ({
+                            ...prev,
+                            admitCards: { ...(prev.admitCards || {}), [term]: checked }
+                          }));
+                        }}
+                      />
+                    </label>
+
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', fontSize: '13px' }}>
+                      <span>Online Result Page</span>
+                      <input 
+                        type="checkbox"
+                        style={{ width: '17px', height: '17px', cursor: 'pointer' }}
+                        checked={localPublishDocs.results?.[term] ?? true}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          setLocalPublishDocs(prev => ({
+                            ...prev,
+                            results: { ...(prev.results || {}), [term]: checked }
+                          }));
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end', gap: '10px', borderTop: '1px solid #eee', paddingTop: '14px' }}>
+              <button type="button" className="btn-secondary" onClick={() => setPublishingStudent(null)}>Cancel</button>
+              <button type="button" className="btn-primary" style={{ background: '#0d2149' }} onClick={submitPublishSettings}>Confirm & Save Settings</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ADMIN WALLET TOPUP MODAL */}
       {walletTopupModal.open && (
@@ -1886,27 +2173,37 @@ export default function App() {
       {/* DOCUMENT PREVIEW MODAL */}
       {activeDocStudent && (
         <div className="modal-overlay" onClick={() => setActiveDocStudent(null)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '900px' }}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '1180px', width: '96vw', maxHeight: '92vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #eee', paddingBottom: '12px' }}>
               <h3 style={{ margin: 0 }}>{activeDocStudent.name} - Documents</h3>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <select value={activeDocTerm} onChange={e => setActiveDocTerm(e.target.value)} style={{ padding: '6px 10px', borderRadius: '4px', border: '1px solid #ccc' }}>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <select value={activeDocTerm} onChange={e => setActiveDocTerm(e.target.value)} style={{ padding: '6px 10px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '13px' }}>
                   {getTermNames(courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())).map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
-                <button className="btn-primary" onClick={() => window.print()}><Printer size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Print</button>
+                <button className="btn-primary" style={{ padding: '6px 12px', fontSize: '12.5px' }} onClick={() => window.print()}>
+                  <Printer size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Print
+                </button>
+                <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '12.5px', background: '#0284c7', color: '#fff', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }} onClick={handleDownloadJpg} disabled={isDownloading}>
+                  <Image size={14} /> {isDownloading ? 'Exporting...' : 'Download JPG'}
+                </button>
+                <button className="btn-primary" style={{ padding: '6px 12px', fontSize: '12.5px', background: '#dc2626', display: 'inline-flex', alignItems: 'center', gap: '4px' }} onClick={handleDownloadPdf} disabled={isDownloading}>
+                  <FileDown size={14} /> {isDownloading ? 'Exporting...' : 'Download PDF'}
+                </button>
                 <button className="modal-close-btn" onClick={() => setActiveDocStudent(null)}><X size={18} /></button>
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-              <button className={`nav-mode-btn ${activeDocTab === 'marksheet' ? 'active' : ''}`} onClick={() => setActiveDocTab('marksheet')}>Marksheet</button>
-              <button className={`nav-mode-btn ${activeDocTab === 'admit' ? 'active' : ''}`} onClick={() => setActiveDocTab('admit')}>Admit Card</button>
-              <button className={`nav-mode-btn ${activeDocTab === 'result' ? 'active' : ''}`} onClick={() => setActiveDocTab('result')}>Online Result</button>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+              <button className={`doc-tab-btn ${activeDocTab === 'marksheet' ? 'active' : ''}`} onClick={() => setActiveDocTab('marksheet')}>Marksheet</button>
+              <button className={`doc-tab-btn ${activeDocTab === 'admit' ? 'active' : ''}`} onClick={() => setActiveDocTab('admit')}>Admit Card</button>
+              <button className={`doc-tab-btn ${activeDocTab === 'idcard' ? 'active' : ''}`} onClick={() => setActiveDocTab('idcard')}>Identity Card</button>
+              <button className={`doc-tab-btn ${activeDocTab === 'result' ? 'active' : ''}`} onClick={() => setActiveDocTab('result')}>Online Result</button>
             </div>
 
-            <div style={{ background: '#f9fafb', padding: '20px', borderRadius: '8px', display: 'flex', justifyContent: 'center', overflowX: 'auto' }}>
+            <div style={{ background: '#f9fafb', padding: '20px', borderRadius: '8px', display: 'flex', justifyContent: 'center', overflowX: 'auto' }} ref={docPreviewRef}>
               {activeDocTab === 'marksheet' && <MarksheetTemplate student={activeDocStudent} course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} termName={activeDocTerm} />}
               {activeDocTab === 'admit' && <AdmitCardTemplate student={activeDocStudent} course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} termName={activeDocTerm} />}
+              {activeDocTab === 'idcard' && <IdCardTemplate student={activeDocStudent} course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} termName={activeDocTerm} />}
               {activeDocTab === 'result' && <OnlineResultTemplate student={activeDocStudent} course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} termName={activeDocTerm} />}
             </div>
           </div>

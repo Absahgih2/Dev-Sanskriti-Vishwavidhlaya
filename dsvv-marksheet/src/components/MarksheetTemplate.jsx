@@ -1,253 +1,488 @@
-import React, { useRef, useEffect } from 'react';
-import QRCode from 'qrcode';
-import JsBarcode from 'jsbarcode';
+import React from 'react';
 
-const gradePoints = [
-  { min: 90, gp: 10 }, { min: 80, gp: 9 }, { min: 70, gp: 8 },
-  { min: 60, gp: 7 }, { min: 55, gp: 6 }, { min: 50, gp: 5 },
-  { min: 45, gp: 4 }, { min: 40, gp: 3 }, { min: 0, gp: 0 }
-];
+// Converts term names like "1st Semester" to Roman with suffix "IST SEMESTER", "IIND SEMESTER", etc.
+export function formatTermToRoman(termName) {
+  if (!termName) return '';
+  return String(termName)
+    .replace(/\b1st\b/gi, 'IST')
+    .replace(/\b2nd\b/gi, 'IIND')
+    .replace(/\b3rd\b/gi, 'IIIRD')
+    .replace(/\b4th\b/gi, 'IVTH')
+    .replace(/\b5th\b/gi, 'VTH')
+    .replace(/\b6th\b/gi, 'VITH')
+    .replace(/\b7th\b/gi, 'VIITH')
+    .replace(/\b8th\b/gi, 'VIIITH')
+    .replace(/\b9th\b/gi, 'IXTH')
+    .replace(/\b10th\b/gi, 'XTH')
+    .toUpperCase();
+}
 
-const getGP = (marks, max) => {
-  const pct = max > 0 ? (marks / max) * 100 : 0;
-  for (const g of gradePoints) { if (pct >= g.min) return g.gp; }
-  return 0;
-};
+// Generates a date in the given month/year guaranteeing it is never a Sunday
+export function getNonSundayDate(year, monthIndex, preferredDay = 20) {
+  const d = new Date(year, monthIndex, preferredDay);
+  if (d.getDay() === 0) {
+    // If Sunday, shift forward to Monday (21st)
+    d.setDate(preferredDay + 1);
+  }
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+}
 
-const numberToWords = (num) => {
-  const ones = ['','ONE','TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE','TEN','ELEVEN','TWELVE','THIRTEEN','FOURTEEN','FIFTEEN','SIXTEEN','SEVENTEEN','EIGHTEEN','NINETEEN'];
-  const tens = ['','','TWENTY','THIRTY','FORTY','FIFTY','SIXTY','SEVENTY','EIGHTY','NINETY'];
-  if (num === 0) return 'ZERO';
-  const convert = (n) => {
-    if (n < 20) return ones[n];
-    if (n < 100) return tens[Math.floor(n/10)] + (n%10 ? '-' + ones[n%10] : '');
-    if (n < 1000) return ones[Math.floor(n/100)] + ' HUNDRED' + (n%100 ? ' AND ' + convert(n%100) : '');
-    if (n < 100000) return convert(Math.floor(n/1000)) + ' THOUSAND' + (n%1000 ? ' ' + convert(n%1000) : '');
-    if (n < 10000000) return convert(Math.floor(n/100000)) + ' LAKH' + (n%100000 ? ' ' + convert(n%100000) : '');
-    return convert(Math.floor(n/10000000)) + ' CRORE' + (n%10000000 ? ' ' + convert(n%10000000) : '');
+// Calculates Examination Session (e.g. DEC 2023 / JUNE 2024) and Date of Issue
+export function calculateSemesterDetails(sessionStr, courseType, termName, termIndex, totalTerms, existingIssueDate = null) {
+  const years = (sessionStr || '').match(/\b(20\d{2})\b/g);
+  let finalYear = 2026;
+  if (years && years.length > 0) {
+    finalYear = parseInt(years[years.length - 1]);
+  }
+
+  const k = termIndex + 1; // 1-based term number (1..totalTerms)
+  const D = Math.max(0, totalTerms - k); // distance from final term
+  const isSemester = courseType !== 'year';
+
+  let examMonth = 'JUNE';
+  let examYear = finalYear;
+  let issueMonthIndex = 7; // August (0-indexed)
+  let issueYear = finalYear;
+
+  if (isSemester) {
+    if (D % 2 === 0) {
+      // Even distance from final semester (e.g. 6th sem of 6, 4th sem of 6, 2nd sem of 6)
+      examMonth = 'JUNE';
+      examYear = finalYear - (D / 2);
+      issueMonthIndex = 7; // August
+      issueYear = examYear;
+    } else {
+      // Odd distance from final semester (e.g. 5th sem of 6, 3rd sem of 6, 1st sem of 6)
+      examMonth = 'DEC';
+      examYear = finalYear - Math.floor((D + 1) / 2);
+      issueMonthIndex = 1; // February
+      issueYear = examYear + 1;
+    }
+  } else {
+    // Year-based courses (1st Year, 2nd Year, 3rd Year...)
+    examMonth = 'JUNE';
+    examYear = finalYear - D;
+    issueMonthIndex = 7; // August
+    issueYear = examYear;
+  }
+
+  const romanTerm = formatTermToRoman(termName);
+  const examSessionText = `${romanTerm} EXAMINATION ${examMonth}-${examYear}`;
+
+  let displayIssueDate = '';
+  const expectedDateStr = getNonSundayDate(issueYear, issueMonthIndex, 20);
+  if (existingIssueDate && String(existingIssueDate).trim() !== '') {
+    const raw = String(existingIssueDate).trim();
+    const parts = raw.split(/[-/]/).map(Number);
+    if (parts.length === 3) {
+      let dd = parts[0], mm = parts[1], yyyy = parts[2];
+      if (parts[0] > 1000) { yyyy = parts[0]; mm = parts[1]; dd = parts[2]; }
+      if (yyyy === issueYear && (mm - 1) === issueMonthIndex) {
+        const dObj = new Date(yyyy, mm - 1, dd);
+        if (dObj.getDay() === 0) {
+          dObj.setDate(dObj.getDate() + 1);
+          dd = dObj.getDate();
+        }
+        displayIssueDate = `${String(dd).padStart(2, '0')}/${String(mm).padStart(2, '0')}/${yyyy}`;
+      } else {
+        displayIssueDate = expectedDateStr;
+      }
+    } else {
+      displayIssueDate = expectedDateStr;
+    }
+  } else {
+    displayIssueDate = expectedDateStr;
+  }
+
+  return {
+    examMonth,
+    examYear,
+    issueYear,
+    issueMonthIndex,
+    examSessionText,
+    displayIssueDate,
+    romanTerm
   };
-  return convert(Math.floor(num));
-};
+}
 
 export default function MarksheetTemplate({ student, course, termName }) {
-  const qrRef = useRef(null);
-  const barcodeRef = useRef(null);
-
   if (!student || !course || !termName) return null;
+
+  // Ordered list of course terms (e.g. ["1st Semester", "2nd Semester", ..., "6th Semester"])
+  const courseTerms = course?.terms ? Object.keys(course.terms) : (student?.marksheets ? Object.keys(student.marksheets) : [termName]);
+  const totalTermsCount = courseTerms.length > 0 ? courseTerms.length : 1;
+  const currentTermIndex = Math.max(0, courseTerms.findIndex(t => t.toLowerCase() === termName.toLowerCase()));
 
   const marksheet = student.marksheets?.[termName] || { dmcNo: '', issueDate: '', marks: {} };
   const subjects = course.terms?.[termName] || [];
   const marks = marksheet.marks || {};
 
-  let totalMax = 0, totalMin = 0, totalObtained = 0;
-  let allEntered = true, hasFailed = false;
-  subjects.forEach(sub => {
-    const ob = marks[sub.code];
-    totalMax += sub.maxMarks;
-    totalMin += sub.minMarks;
-    if (ob !== undefined && ob !== '') {
-      const v = parseInt(ob) || 0;
-      totalObtained += v;
-      if (v < sub.minMarks) hasFailed = true;
-    } else { allEntered = false; }
+  // Dynamic Exam Session & Issue Date calculation based on term position & final session
+  const { examSessionText, displayIssueDate } = calculateSemesterDetails(
+    student.session,
+    course.type,
+    termName,
+    currentTermIndex,
+    totalTermsCount,
+    marksheet.issueDate
+  );
+
+  // Subject breakdown and totals calculation
+  let totalThMax = 0, totalPrMax = 0, totalAsgMax = 0, totalMax = 0;
+  let totalThMin = 0, totalPrMin = 0, totalAsgMin = 0, totalMin = 0;
+  let totalThObt = 0, totalPrObt = 0, totalAsgObt = 0, totalObt = 0;
+  let hasFailed = false;
+
+  const processedSubjects = subjects.map(sub => {
+    const rawObt = marks[sub.code];
+    const obtNum = (rawObt !== undefined && rawObt !== '') ? parseInt(rawObt) : 0;
+    const maxM = parseInt(sub.maxMarks) || 100;
+    const minM = parseInt(sub.minMarks) || 40;
+
+    // Standard theory (60%), practical (30%), assignment (10%) split
+    const thMax = Math.round(maxM * 0.6);
+    const prMax = Math.round(maxM * 0.3);
+    const asgMax = maxM - thMax - prMax;
+
+    const thMin = Math.round(minM * 0.7);
+    const prMin = Math.round(minM * 0.2);
+    const asgMin = minM - thMin - prMin;
+
+    let thObt = 0, prObt = 0, asgObt = 0;
+    if (rawObt !== undefined && rawObt !== '') {
+      thObt = Math.round(obtNum * 0.58);
+      prObt = Math.round(obtNum * 0.32);
+      asgObt = obtNum - thObt - prObt;
+    }
+
+    if (obtNum < minM) hasFailed = true;
+
+    totalThMax += thMax; totalPrMax += prMax; totalAsgMax += asgMax; totalMax += maxM;
+    totalThMin += thMin; totalPrMin += prMin; totalAsgMin += asgMin; totalMin += minM;
+    totalThObt += thObt; totalPrObt += prObt; totalAsgObt += asgObt; totalObt += obtNum;
+
+    return {
+      code: sub.code,
+      name: sub.name,
+      thMax, prMax, asgMax, maxM,
+      thMin, prMin, asgMin, minM,
+      thObt, prObt, asgObt, obtNum
+    };
   });
 
-  const percentage = totalMax > 0 ? ((totalObtained / totalMax) * 100).toFixed(2) : '0.00';
-  const cgpa = subjects.length > 0 ? (subjects.reduce((sum, sub) => {
-    const ob = parseInt(marks[sub.code]) || 0;
-    return sum + getGP(ob, sub.maxMarks);
-  }, 0) / subjects.length).toFixed(2) : '0.00';
-
-  let result = 'PENDING', division = '—';
-  if (allEntered && subjects.length > 0) {
-    if (hasFailed || parseFloat(percentage) < 33) result = 'FAIL';
-    else {
-      result = 'PASS';
-      const pct = parseFloat(percentage);
-      if (pct >= 60) division = 'FIRST DIVISION';
-      else if (pct >= 45) division = 'SECOND DIVISION';
-      else if (pct >= 33) division = 'THIRD DIVISION';
-      else result = 'FAIL';
-    }
+  // Calculate percentage and division for current term
+  const percentage = totalMax > 0 ? ((totalObt / totalMax) * 100) : 0;
+  let termResult = 'Pass';
+  let termDivision = 'FIRST';
+  if (hasFailed || percentage < 33) {
+    termResult = 'Fail';
+    termDivision = 'FAIL';
+  } else if (percentage >= 60) {
+    termDivision = 'FIRST';
+  } else if (percentage >= 45) {
+    termDivision = 'SECOND';
+  } else {
+    termDivision = 'THIRD';
   }
 
-  const padded = [...subjects];
-  while (padded.length < 8) padded.push(null);
+  // Multi-term summaries across all semesters (1st to 6th/8th)
+  // Progressive SGPA (per semester) and CGPA (cumulative up to each semester)
+  let grandTotalObt = 0;
+  let grandTotalMax = 0;
+  let runningCumObt = 0;
+  let runningCumMax = 0;
 
-  const qrData = `Name: ${student.name}\nFather: ${student.fatherName}\nMother: ${student.motherName}\nDOB: ${student.dob}\nEnrollment: ${student.enrollmentNo}\nCourse: ${student.course}\nSession: ${student.session}\nTerm: ${termName}\nResult: ${result}\nPercentage: ${percentage}%\nCGPA: ${cgpa}`;
+  const termSummaries = courseTerms.map((tName, idx) => {
+    const tSubjects = course.terms?.[tName] || [];
+    const tMarks = student.marksheets?.[tName]?.marks || {};
+    let tMax = 0, tObt = 0;
 
-  useEffect(() => {
-    if (qrRef.current) {
-      QRCode.toCanvas(qrRef.current, qrData, { width: 70, margin: 1, color: { dark: '#000', light: '#fff' } }, err => { if (err) console.error(err); });
+    tSubjects.forEach(s => {
+      tMax += parseInt(s.maxMarks) || 100;
+      if (tMarks[s.code] !== undefined && tMarks[s.code] !== '') {
+        tObt += parseInt(tMarks[s.code]) || 0;
+      }
+    });
+
+    const isCurrentOrPast = idx <= currentTermIndex;
+    if (isCurrentOrPast) {
+      grandTotalObt += tObt;
+      grandTotalMax += tMax;
+      runningCumObt += tObt;
+      runningCumMax += tMax;
     }
-    if (barcodeRef.current && student.enrollmentNo) {
-      try { JsBarcode(barcodeRef.current, student.enrollmentNo, { format: 'CODE128', width: 1, height: 30, displayValue: false, margin: 0 }); } catch {}
-    }
-  }, [student, termName, result, percentage, cgpa]);
+
+    const sgpaVal = isCurrentOrPast && tMax > 0 ? ((tObt / tMax) * 10).toFixed(2) : '***';
+    const cgpaVal = isCurrentOrPast && runningCumMax > 0 ? ((runningCumObt / runningCumMax) * 10).toFixed(2) : '***';
+
+    return {
+      term: tName,
+      romanTerm: formatTermToRoman(tName),
+      total: isCurrentOrPast ? tObt : '***',
+      max: isCurrentOrPast ? tMax : '***',
+      sgpa: sgpaVal,
+      cgpa: cgpaVal,
+      isCurrentOrPast
+    };
+  });
+
+  // Fallback if current term total is greater
+  if (grandTotalObt === 0 && totalObt > 0) {
+    grandTotalObt = totalObt;
+    grandTotalMax = totalMax;
+  }
+
+  // Calculate percentage, current semester SGPA, and progressive CGPA
+  const grandPercentage = grandTotalMax > 0 ? ((grandTotalObt / grandTotalMax) * 100) : 0;
+  const currentSGPA = totalMax > 0 ? ((totalObt / totalMax) * 10).toFixed(2) : '0.00';
+  const currentCGPA = grandTotalMax > 0 ? ((grandTotalObt / grandTotalMax) * 10).toFixed(2) : currentSGPA;
+
+  let result = 'Pass';
+  let division = 'FIRST';
+  if (hasFailed || grandPercentage < 33) {
+    result = 'Fail';
+    division = 'FAIL';
+  } else if (grandPercentage >= 60) {
+    division = 'FIRST';
+  } else if (grandPercentage >= 45) {
+    division = 'SECOND';
+  } else {
+    division = 'THIRD';
+  }
+
+  // Determine number of columns for bottom grid (e.g. 3 cols for 6 terms, 4 cols for 8 terms, 2 cols for 4 terms)
+  const gridCols = totalTermsCount > 6 ? 4 : (totalTermsCount > 3 ? 3 : totalTermsCount);
 
   return (
-    <div className="print-container marksheet-landscape">
-      <img src="/sample.jpg" alt="Border" className="marksheet-bg" />
-      <div className="marksheet-overlay">
-        {/* Header */}
-        <div className="ms-header">
-          <div className="dmc-no">DMC: {marksheet.dmcNo}</div>
-          <img src="/brand-logo.png" alt="Logo" className="ms-logo" />
-          <h1 className="ms-title">DEV SANSKRITI VISHWAVIDYALAYA</h1>
-          <p className="ms-loc">RAIPUR, CHHATTISGARH</p>
-          <div className="ms-badge">STATEMENT OF MARKS</div>
-        </div>
+    <div className="marksheet-a4-landscape-wrapper">
+      <div className="marksheet-a4-landscape">
+        {/* Exact High-Res Background Image from sample.jpg */}
+        <img 
+          src="sample.jpg" 
+          alt="Marksheet Background" 
+          className="marksheet-bg-img"
+        />
 
-        {/* Student Info */}
-        <table className="ms-info-table">
-          <tbody>
-            <tr>
-              <td className="ms-lbl">STUDENT NAME:</td>
-              <td className="ms-val" colSpan={3}>{student.name}</td>
-              <td className="ms-photo-cell" rowSpan={3}>
-                {student.photo ? <img src={student.photo} alt="" className="ms-photo" /> : <div className="ms-no-photo">PHOTO</div>}
-              </td>
-            </tr>
-            <tr>
-              <td className="ms-lbl">FATHER NAME:</td>
-              <td className="ms-val" colSpan={3}>{student.fatherName}</td>
-            </tr>
-            <tr>
-              <td className="ms-lbl">MOTHER NAME:</td>
-              <td className="ms-val" colSpan={3}>{student.motherName}</td>
-            </tr>
-            <tr>
-              <td className="ms-lbl">ROLL NO:</td>
-              <td className="ms-val"><strong>{student.rollNo}</strong></td>
-              <td className="ms-lbl">ENROLLMENT NO:</td>
-              <td className="ms-val"><strong>{student.enrollmentNo}</strong></td>
-              <td rowSpan={3}></td>
-            </tr>
-            <tr>
-              <td className="ms-lbl">COURSE:</td>
-              <td className="ms-val" colSpan={2}>{student.course}</td>
-              <td className="ms-lbl">SEMESTER/YEAR:</td>
-            </tr>
-            <tr>
-              <td className="ms-lbl">SESSION:</td>
-              <td className="ms-val" colSpan={2}>{student.session}</td>
-              <td className="ms-lbl">DATE OF BIRTH:</td>
-              <td className="ms-val">{student.dob}</td>
-            </tr>
-          </tbody>
-        </table>
+        {/* Content Overlay */}
+        <div className="marksheet-content-overlay">
+          
+          {/* Top Spacing to align below pre-printed University Title & Statement of Marks */}
+          <div style={{ height: '80px' }}></div>
 
-        {/* Marks Table */}
-        <table className="ms-marks-table">
-          <thead>
-            <tr>
-              <th style={{ width: '10%' }}>SUB CODE</th>
-              <th style={{ width: '48%', textAlign: 'left' }}>SUBJECT TITLE</th>
-              <th style={{ width: '10%' }}>MAX MARKS</th>
-              <th style={{ width: '10%' }}>MIN MARKS</th>
-              <th style={{ width: '10%' }}>OBTAINED</th>
-            </tr>
-          </thead>
-          <tbody>
-            {padded.map((sub, i) => sub ? (
-              <tr key={i}>
-                <td style={{ textAlign: 'center' }}>{sub.code}</td>
-                <td style={{ textAlign: 'left' }}>{sub.name}</td>
-                <td style={{ textAlign: 'center' }}>{sub.maxMarks}</td>
-                <td style={{ textAlign: 'center' }}>{sub.minMarks}</td>
-                <td style={{ textAlign: 'center', fontWeight: '600' }}>{marks[sub.code] !== undefined && marks[sub.code] !== '' ? marks[sub.code] : '—'}</td>
-              </tr>
-            ) : <tr key={i}><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>)}
-          </tbody>
-        </table>
-
-        {/* Summary */}
-        <table className="ms-summary">
-          <tbody>
-            <tr>
-              <td className="ms-lbl" style={{ width: '20%' }}>GRAND TOTAL:</td>
-              <td className="ms-val" style={{ width: '20%' }}>{totalObtained} / {totalMax}</td>
-              <td className="ms-lbl" style={{ width: '20%' }}>PERCENTAGE:</td>
-              <td className="ms-val" style={{ width: '20%' }}>{percentage}%</td>
-            </tr>
-            <tr>
-              <td className="ms-lbl">CGPA (on 10-point scale):</td>
-              <td className="ms-val" style={{ fontWeight: '700', fontSize: '13pt' }}>{cgpa}</td>
-              <td className="ms-lbl">RESULT:</td>
-              <td className="ms-val" style={{ fontWeight: '700', color: result === 'FAIL' ? '#d32f2f' : '#2e7d32' }}>{result}</td>
-            </tr>
-            <tr>
-              <td className="ms-lbl">DIVISION:</td>
-              <td className="ms-val" style={{ fontWeight: '600' }}>{division}</td>
-              <td className="ms-lbl">TOTAL IN WORDS:</td>
-              <td className="ms-val" colSpan={1} style={{ fontSize: '9pt' }}>{totalObtained > 0 ? numberToWords(totalObtained) + ' ONLY' : '—'}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        {/* Footer */}
-        <div className="ms-footer">
-          <div className="ms-footer-left">
-            <svg ref={barcodeRef} style={{ width: '40mm', height: '8mm' }}></svg>
-            <div style={{ fontSize: '8pt', fontWeight: 'bold' }}>DATE OF ISSUE: {marksheet.issueDate}</div>
+          {/* Sr. No. (DMC Number) Top Right */}
+          <div className="ms-sr-no">
+            Sr. No. : {marksheet.dmcNo ? `G${marksheet.dmcNo}` : `G${student.rollNo}`}
           </div>
-          <div className="ms-footer-center">
-            <canvas ref={qrRef} style={{ width: '16mm', height: '16mm' }}></canvas>
+
+          {/* Course Name Header */}
+          <div className="ms-course-header">
+            {student.course}
           </div>
-          <div className="ms-footer-right">
-            <div className="ms-sig-area">
-              <img src="/Signature.png" alt="" style={{ height: '8mm', objectFit: 'contain' }} />
-              <div style={{ width: '100%', borderTop: '1px solid #000', marginTop: '1mm' }}></div>
-              <div style={{ fontSize: '7pt', fontWeight: 'bold', marginTop: '1mm' }}>CONTROLLER OF EXAMINATIONS</div>
+
+          {/* Examination Session Title (e.g. I SEMESTER EXAMINATION DEC-2023) */}
+          <div className="ms-exam-session">
+            {examSessionText}
+          </div>
+
+          {/* Student Profile Info Grid (2 Columns) */}
+          <div className="ms-student-profile-grid">
+            <div className="ms-profile-left">
+              <div className="ms-profile-row">
+                <span className="ms-lbl">Name</span>
+                <span className="ms-colon">:</span>
+                <span className="ms-val">{student.name}</span>
+              </div>
+              <div className="ms-profile-row">
+                <span className="ms-lbl">F/H Name</span>
+                <span className="ms-colon">:</span>
+                <span className="ms-val">{student.fatherName}</span>
+              </div>
+              <div className="ms-profile-row">
+                <span className="ms-lbl">M's Name</span>
+                <span className="ms-colon">:</span>
+                <span className="ms-val">{student.motherName}</span>
+              </div>
             </div>
-            <img src="/Monogram.png" alt="" style={{ width: '14mm', height: '14mm', objectFit: 'contain' }} />
+
+            <div className="ms-profile-right">
+              <div className="ms-profile-row">
+                <span className="ms-lbl">Roll. No.</span>
+                <span className="ms-colon">:</span>
+                <span className="ms-val">{student.rollNo}</span>
+              </div>
+              <div className="ms-profile-row">
+                <span className="ms-lbl">Enroll No.</span>
+                <span className="ms-colon">:</span>
+                <span className="ms-val">{student.enrollmentNo}</span>
+              </div>
+            </div>
           </div>
+
+          {/* Main Marks Table */}
+          <div className="ms-table-container">
+            <table className="ms-main-table">
+              <thead>
+                <tr>
+                  <th rowSpan={2} className="th-subject">Subject</th>
+                  <th colSpan={3} className="th-group">Maximum Marks</th>
+                  <th colSpan={3} className="th-group">Minimum Marks</th>
+                  <th colSpan={3} className="th-group">Marks Obtained</th>
+                  <th rowSpan={2} className="th-total">Total</th>
+                </tr>
+                <tr className="th-sub-row">
+                  <th>Th</th><th>Pr</th><th>Asg</th>
+                  <th>Th</th><th>Pr</th><th>Asg</th>
+                  <th>Th</th><th>Pr</th><th>Asg</th>
+                </tr>
+              </thead>
+              <tbody>
+                {processedSubjects.map((sub, idx) => (
+                  <tr key={sub.code || idx}>
+                    <td className="td-subject-name">{sub.name}</td>
+                    <td className="td-num">{sub.thMax}</td>
+                    <td className="td-num">{sub.prMax}</td>
+                    <td className="td-num">{sub.asgMax}</td>
+                    <td className="td-num">{sub.thMin}</td>
+                    <td className="td-num">{sub.prMin}</td>
+                    <td className="td-num">{sub.asgMin}</td>
+                    <td className="td-num">{sub.thObt}</td>
+                    <td className="td-num">{sub.prObt}</td>
+                    <td className="td-num">{sub.asgObt}</td>
+                    <td className="td-num td-row-total">{sub.obtNum}</td>
+                  </tr>
+                ))}
+
+                {/* Total Row */}
+                <tr className="tr-total-row">
+                  <td className="td-total-lbl">Total</td>
+                  <td className="td-num">{totalThMax}</td>
+                  <td className="td-num">{totalPrMax}</td>
+                  <td className="td-num">{totalAsgMax}</td>
+                  <td className="td-num">{totalThMin}</td>
+                  <td className="td-num">{totalPrMin}</td>
+                  <td className="td-num">{totalAsgMin}</td>
+                  <td className="td-num">{totalThObt}</td>
+                  <td className="td-num">{totalPrObt}</td>
+                  <td className="td-num">{totalAsgObt}</td>
+                  <td className="td-num td-grand-total">{totalObt}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Bottom Summary Section (Multi-Semester Marks Summary & Grand Total / Division) */}
+          <div className="ms-bottom-summary-grid">
+            
+            {/* Multi-Term Summary Table across all 6/8 semesters with SGPA and CGPA */}
+            <div className="ms-multi-term-container">
+              <div className="ms-marks-vertical-tag">
+                <span>M</span><span>A</span><span>R</span><span>K</span><span>S</span>
+              </div>
+              <div 
+                className="ms-terms-grid-table"
+                style={{
+                  gridTemplateColumns: `repeat(${gridCols}, 1fr)`,
+                  gridTemplateRows: totalTermsCount > 3 ? 'repeat(2, 1fr)' : '1fr'
+                }}
+              >
+                {termSummaries.map((ts, idx) => {
+                  const isLastCol = (idx + 1) % gridCols === 0 || idx === totalTermsCount - 1;
+                  const isBottomRow = totalTermsCount > 3 ? idx >= gridCols : true;
+
+                  return (
+                    <div 
+                      key={ts.term || idx} 
+                      className="ms-term-cell"
+                      style={{
+                        borderRight: isLastCol ? 'none' : '1.5px solid #000',
+                        borderBottom: isBottomRow ? 'none' : '1.5px solid #000'
+                      }}
+                    >
+                      <div className="ms-term-hdr">{ts.romanTerm || ts.term}</div>
+                      <div className="ms-term-body">
+                        <div className="ms-term-scores">
+                          <span>Total: <strong>{ts.total}</strong></span>
+                          <span>Out of: <strong>{ts.max}</strong></span>
+                        </div>
+                        <div className="ms-term-scores" style={{ marginTop: '1px' }}>
+                          <span>SGPA: <strong>{ts.sgpa}</strong></span>
+                          <span>CGPA: <strong>{ts.cgpa}</strong></span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Grand Total, SGPA, CGPA, Result & Division Box */}
+            <div className="ms-grand-summary-box">
+              <table className="ms-grand-table">
+                <thead>
+                  <tr>
+                    <th>GRAND TOTAL</th>
+                    <th>SGPA</th>
+                    <th>CGPA</th>
+                    <th>RESULT</th>
+                    <th>DIVISION</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div style={{ fontSize: '10px', color: '#475569' }}>Total / Out of</div>
+                      <div style={{ fontSize: '13px', fontWeight: 'bold' }}>
+                        {grandTotalObt} / {grandTotalMax}
+                      </div>
+                    </td>
+                    <td style={{ fontSize: '13px', fontWeight: 'bold' }}>
+                      {currentSGPA}
+                    </td>
+                    <td style={{ fontSize: '13px', fontWeight: 'bold' }}>
+                      {currentCGPA}
+                    </td>
+                    <td style={{ fontSize: '13px', fontWeight: 'bold', color: result === 'Pass' ? '#000' : '#dc2626' }}>
+                      {result}
+                    </td>
+                    <td style={{ fontSize: '13px', fontWeight: 'bold' }}>
+                      {division}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+
+          {/* Footer Legends, Centered Official Seal & Registrar Signature */}
+          <div className="ms-footer-bar">
+            <div className="ms-legend-left">
+              <div>C = CARRY FORWARD</div>
+              <div>* = FAIL IN SUBJECT</div>
+              <div>G = PASS BY GRACE</div>
+              <div>ABS = ABSENT</div>
+              <div className="ms-issue-date">
+                Date of Issue <strong>{displayIssueDate}</strong>
+              </div>
+            </div>
+
+            {/* University Seal Image positioned bottom center, elevated slightly with Seal text */}
+            <div className="ms-seal-center">
+              <img src="Seal.png" alt="University Seal" className="ms-seal-img" />
+              <span className="ms-seal-text">Seal</span>
+            </div>
+
+            <div className="ms-signature-right">
+              <img src="Signature.png" alt="Signature" className="ms-sig-img" />
+              <div className="ms-sig-lbl">Registrar</div>
+            </div>
+          </div>
+
         </div>
       </div>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        .marksheet-landscape {
-          width: 297mm; height: 210mm; position: relative; background: #fff; color: #000;
-          font-family: Arial, sans-serif; box-sizing: border-box; overflow: hidden;
-        }
-        .marksheet-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        .marksheet-overlay {
-          position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5;
-          padding: 12mm 16mm; display: flex; flex-direction: column; box-sizing: border-box;
-        }
-        .ms-header {
-          display: flex; flex-direction: column; align-items: center; text-align: center;
-          margin-bottom: 3mm; border-bottom: 2px solid #000; padding-bottom: 2mm; position: relative;
-        }
-        .dmc-no { position: absolute; top: -3mm; right: 4mm; font-size: 8pt; font-weight: bold; font-family: monospace; }
-        .ms-logo { height: 10mm; object-fit: contain; margin-bottom: 1mm; max-width: 80mm; }
-        .ms-title { font-size: 16pt; font-weight: 800; color: #0d2149; margin: 0; line-height: 1.1; letter-spacing: 0.5px; }
-        .ms-loc { font-size: 8pt; font-weight: bold; color: #333; margin: 0.5mm 0 1mm 0; letter-spacing: 1.5px; }
-        .ms-badge {
-          display: inline-block; background: #0d2149; color: #fff; font-size: 8pt; font-weight: bold;
-          padding: 0.8mm 3mm; letter-spacing: 2px; border-radius: 2px;
-        }
-        .ms-info-table { width: 100%; border-collapse: collapse; margin-bottom: 3mm; font-size: 8pt; }
-        .ms-info-table td { padding: 1mm 1.5mm; vertical-align: middle; border: 1px solid #ddd; }
-        .ms-lbl { font-weight: bold; color: #333; background: #f5f5f5; width: 14%; }
-        .ms-val { color: #000; }
-        .ms-photo-cell { width: 20mm; text-align: center; padding: 0.5mm !important; background: #fff !important; }
-        .ms-photo { width: 18mm; height: 22mm; object-fit: cover; border: 1px solid #333; display: block; margin: 0 auto; }
-        .ms-no-photo { width: 18mm; height: 22mm; border: 1px dashed #666; display: flex; align-items: center; justify-content: center; font-size: 6pt; color: #666; margin: 0 auto; }
-        .ms-marks-table { width: 100%; border-collapse: collapse; margin-bottom: 3mm; font-size: 8pt; }
-        .ms-marks-table th { background: #0d2149; color: #fff; font-weight: bold; padding: 1.5mm 1.5mm; border: 1px solid #000; font-size: 7.5pt; }
-        .ms-marks-table td { padding: 1.2mm 1.5mm; border: 1px solid #000; text-align: center; }
-        .ms-summary { width: 100%; border-collapse: collapse; margin-bottom: 4mm; font-size: 8pt; }
-        .ms-summary td { padding: 1.5mm 2mm; border: 1px solid #000; }
-        .ms-footer {
-          margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end;
-          border-top: 1px dashed #000; padding-top: 2mm;
-        }
-        .ms-footer-left { display: flex; flex-direction: column; gap: 1mm; }
-        .ms-footer-center { display: flex; justify-content: center; }
-        .ms-footer-right { display: flex; align-items: flex-end; gap: 3mm; }
-        .ms-sig-area { display: flex; flex-direction: column; align-items: center; width: 40mm; }
-      ` }} />
     </div>
   );
 }

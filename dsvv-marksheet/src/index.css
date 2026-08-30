@@ -1696,3 +1696,414 @@ table {
   border-color: #10b981;
   box-shadow: none;
 }
+
+/* ============================================================
+   A4 LANDSCAPE MARKSHEET SYSTEM (EXACT SAMPLE 2.JPG REPLICATION)
+   ============================================================ */
+
+@page {
+  size: A4 landscape;
+  margin: 0;
+}
+
+@media print {
+  body {
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .no-print, .admin-header, .dashboard-sidebar, .header-nav-actions, .portal-search, .portal-hub-header, .portal-docs-sidebar {
+    display: none !important;
+  }
+  .print-only-container, .marksheet-a4-landscape-wrapper {
+    display: block !important;
+    width: 297mm !important;
+    height: 210mm !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .marksheet-a4-landscape {
+    width: 297mm !important;
+    height: 210mm !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    page-break-after: always;
+    page-break-inside: avoid;
+  }
+}
+
+.marksheet-a4-landscape-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.marksheet-a4-landscape {
+  width: 1050px;
+  height: 742px; /* Exact 297x210 A4 Landscape aspect ratio */
+  position: relative;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  font-family: 'Times New Roman', Times, 'Nimbus Roman No9 L', serif;
+  color: #000000;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.marksheet-bg-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.marksheet-content-overlay {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  padding: 24px 38px 24px 38px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.ms-sr-no {
+  position: absolute;
+  top: 104px;
+  right: 48px;
+  font-size: 13.5px;
+  font-weight: bold;
+  color: #000;
+}
+
+.ms-course-header {
+  text-align: center;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #000;
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+
+.ms-exam-session {
+  text-align: center;
+  font-size: 15.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #000;
+  margin-bottom: 12px;
+}
+
+/* Student Info Grid */
+.ms-student-profile-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 20px;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.ms-profile-right {
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  min-width: 260px;
+  padding-left: 20px;
+}
+
+.ms-profile-row {
+  display: flex;
+  align-items: center;
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: #000;
+}
+
+.ms-lbl {
+  width: 90px;
+  font-weight: 600;
+}
+
+.ms-colon {
+  width: 16px;
+  font-weight: bold;
+}
+
+.ms-val {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Main Marks Table */
+.ms-table-container {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.ms-main-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1.5px solid #000;
+  font-size: 12.5px;
+  line-height: 1.2;
+}
+
+.ms-main-table th {
+  border: 1.5px solid #000;
+  padding: 3.5px 4px;
+  font-size: 12.5px;
+  font-weight: bold;
+  text-align: center;
+  color: #000;
+}
+
+.ms-main-table .th-subject {
+  width: 38%;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.ms-main-table .th-total {
+  width: 9%;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.ms-main-table td {
+  border: 1.5px solid #000;
+  padding: 3.5px 6px;
+  color: #000;
+}
+
+.ms-main-table .td-subject-name {
+  text-align: left;
+  font-weight: 500;
+  padding-left: 10px;
+}
+
+.ms-main-table .td-num {
+  text-align: center;
+  font-weight: 600;
+  width: 6.2%;
+}
+
+.ms-main-table .td-row-total {
+  font-weight: 700;
+  width: 9%;
+}
+
+.tr-total-row td {
+  font-weight: bold !important;
+  border-top: 2px solid #000;
+}
+
+.td-total-lbl {
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Multi-Term Summary Table & Grand Total */
+.ms-bottom-summary-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 16px;
+  margin-top: 2px;
+  margin-bottom: 10px;
+}
+
+.ms-multi-term-container {
+  display: flex;
+  border: 1.5px solid #000;
+  height: 96px;
+}
+
+.ms-marks-vertical-tag {
+  background: #000;
+  color: #fff;
+  width: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  padding: 2px 0;
+}
+
+.ms-terms-grid-table {
+  flex: 1;
+  display: grid;
+  width: 100%;
+}
+
+.ms-term-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 0;
+  text-align: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ms-term-hdr {
+  background: #000000;
+  color: #ffffff;
+  font-size: 9.5px;
+  font-weight: 800;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 1.5px 1px;
+  margin: 0;
+  width: 100%;
+  border-bottom: 1.5px solid #000000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+}
+
+.ms-term-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  padding: 1.5px 3px;
+}
+
+.ms-term-scores {
+  display: flex;
+  justify-content: space-around;
+  font-size: 8.5px;
+  line-height: 1.25;
+  gap: 1px;
+}
+
+.ms-grand-summary-box {
+  display: flex;
+}
+
+.ms-grand-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1.5px solid #000;
+  height: 96px;
+}
+
+.ms-grand-table th {
+  border: 1.5px solid #000;
+  padding: 3px 2px;
+  font-size: 11px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.ms-grand-table td {
+  border: 1.5px solid #000;
+  padding: 3px 2px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Footer Legends, Centered Official Seal & Signatures */
+.ms-footer-bar {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  align-items: flex-end;
+  margin-top: auto;
+  padding: 0 4px;
+}
+
+.ms-legend-left {
+  font-size: 11px;
+  line-height: 1.35;
+  font-weight: 600;
+}
+
+.ms-issue-date {
+  font-size: 12.5px;
+  margin-top: 4px;
+}
+
+.ms-seal-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 6px;
+  transform: translateY(-8px);
+}
+
+.ms-seal-img {
+  height: 76px;
+  width: 76px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.15));
+}
+
+.ms-seal-text {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #000;
+  margin-top: 1px;
+}
+
+.ms-signature-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: auto;
+}
+
+.ms-sig-img {
+  height: 38px;
+  object-fit: contain;
+  margin-bottom: -4px;
+}
+
+.ms-sig-lbl {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* ============================================================
+   Document Modal Tab Buttons
+   ============================================================ */
+.doc-tab-btn {
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1e293b;
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.doc-tab-btn:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.doc-tab-btn.active {
+  background: #0d2149 !important;
+  color: #ffffff !important;
+  border-color: #0d2149 !important;
+  box-shadow: 0 2px 8px rgba(13, 33, 73, 0.25);
+}
