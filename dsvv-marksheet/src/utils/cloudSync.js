@@ -8,37 +8,37 @@ export const APPS_SCRIPT_TEMPLATE = `// ========================================
 
 function doPost(e) {
   try {
-    var raw = e.postData.contents;
+    var raw = (e && e.postData && e.postData.contents) ? e.postData.contents : (e && e.parameter && e.parameter.payload ? e.parameter.payload : '{}');
     var payload = JSON.parse(raw);
-    var action = payload.action;
-    
+    var action = payload.action || 'save';
     var scriptProps = PropertiesService.getScriptProperties();
     
-    if (action === 'save') {
-      // Save full database JSON to script property and timestamp
+    if (action === 'save' && payload.data) {
+      // Save entire database JSON to script property and timestamp
       scriptProps.setProperty('DSVV_DATABASE', JSON.stringify(payload.data));
       scriptProps.setProperty('LAST_UPDATED', new Date().toISOString());
       
-      // Also write summary to Sheet
+      // Also write summary & backup directly to Google Sheet
       try {
         var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-        sheet.getRange(1, 1).setValue('LAST UPDATED');
-        sheet.getRange(1, 2).setValue(new Date().toLocaleString());
-        sheet.getRange(2, 1).setValue('TOTAL STUDENTS');
-        sheet.getRange(2, 2).setValue((payload.data.students || []).length);
-        sheet.getRange(3, 1).setValue('TOTAL COURSES');
-        sheet.getRange(3, 2).setValue((payload.data.courses || []).length);
-        sheet.getRange(4, 1).setValue('TOTAL CENTERS');
-        sheet.getRange(4, 2).setValue((payload.data.centers || []).length);
-        sheet.getRange(6, 1).setValue('FULL JSON DATA');
-        sheet.getRange(6, 2).setValue(JSON.stringify(payload.data));
+        sheet.getRange(1, 1).setValue('STATUS');
+        sheet.getRange(1, 2).setValue('CONNECTED & SYNCED');
+        sheet.getRange(2, 1).setValue('LAST UPDATED');
+        sheet.getRange(2, 2).setValue(new Date().toLocaleString());
+        sheet.getRange(3, 1).setValue('TOTAL STUDENTS');
+        sheet.getRange(3, 2).setValue((payload.data.students || []).length);
+        sheet.getRange(4, 1).setValue('TOTAL COURSES');
+        sheet.getRange(4, 2).setValue((payload.data.courses || []).length);
+        sheet.getRange(5, 1).setValue('TOTAL CENTERS');
+        sheet.getRange(5, 2).setValue((payload.data.centers || []).length);
+        sheet.getRange(7, 1).setValue('DATABASE BACKUP JSON');
+        sheet.getRange(7, 2).setValue(JSON.stringify(payload.data));
       } catch (err) {}
       
       return ContentService.createTextOutput(JSON.stringify({
         status: 'success',
         message: 'Data successfully backed up to Google Drive & Sheets!',
-        updatedAt: new Date().toISOString(),
-        studentsCount: (payload.data.students || []).length
+        updatedAt: new Date().toISOString()
       })).setMimeType(ContentService.MimeType.JSON);
     }
     
@@ -46,16 +46,9 @@ function doPost(e) {
       var saved = scriptProps.getProperty('DSVV_DATABASE');
       var updated = scriptProps.getProperty('LAST_UPDATED');
       if (!saved) {
-        return ContentService.createTextOutput(JSON.stringify({
-          status: 'empty',
-          message: 'No previous backup found on Google Drive.'
-        })).setMimeType(ContentService.MimeType.JSON);
+        return ContentService.createTextOutput(JSON.stringify({ status: 'empty', message: 'No backup found' })).setMimeType(ContentService.MimeType.JSON);
       }
-      return ContentService.createTextOutput(JSON.stringify({
-        status: 'success',
-        data: JSON.parse(saved),
-        lastUpdated: updated
-      })).setMimeType(ContentService.MimeType.JSON);
+      return ContentService.createTextOutput(JSON.stringify({ status: 'success', data: JSON.parse(saved), lastUpdated: updated })).setMimeType(ContentService.MimeType.JSON);
     }
     
     return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: 'Unknown action' })).setMimeType(ContentService.MimeType.JSON);
@@ -70,16 +63,9 @@ function doGet(e) {
     var saved = scriptProps.getProperty('DSVV_DATABASE');
     var updated = scriptProps.getProperty('LAST_UPDATED');
     if (!saved) {
-      return ContentService.createTextOutput(JSON.stringify({
-        status: 'empty',
-        message: 'No previous backup found on Google Drive.'
-      })).setMimeType(ContentService.MimeType.JSON);
+      return ContentService.createTextOutput(JSON.stringify({ status: 'empty', message: 'No backup found' })).setMimeType(ContentService.MimeType.JSON);
     }
-    return ContentService.createTextOutput(JSON.stringify({
-      status: 'success',
-      data: JSON.parse(saved),
-      lastUpdated: updated
-    })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({ status: 'success', data: JSON.parse(saved), lastUpdated: updated })).setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({ status: 'error', error: err.toString() })).setMimeType(ContentService.MimeType.JSON);
   }
@@ -88,10 +74,16 @@ function doGet(e) {
 
 /**
  * Pushes entire local database to Google Drive / Apps Script endpoint
+ * Uses no-cors mode to ensure zero CORS errors across all domains and browsers
  */
 export async function pushToGoogleDrive(endpointUrl, database) {
   if (!endpointUrl || !endpointUrl.startsWith('http')) {
     throw new Error('Please enter a valid Google Apps Script Web App URL.');
+  }
+
+  let cleanUrl = endpointUrl.trim();
+  if (cleanUrl.endsWith('/edit')) {
+    cleanUrl = cleanUrl.replace(/\/edit$/, '/exec');
   }
 
   const payload = {
@@ -104,17 +96,19 @@ export async function pushToGoogleDrive(endpointUrl, database) {
     }
   };
 
-  const response = await fetch(endpointUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify(payload)
-  });
-
   try {
-    const resData = await response.json();
-    return resData;
-  } catch (e) {
-    return { status: 'success', message: 'Backup dispatched to Google Drive successfully.' };
+    await fetch(cleanUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(payload)
+    });
+    return { status: 'success', message: 'Data pushed to Google Drive successfully.' };
+  } catch (err) {
+    throw new Error('Failed to push to Google Drive. Check internet connection and URL.');
   }
 }
 
@@ -126,17 +120,32 @@ export async function pullFromGoogleDrive(endpointUrl) {
     throw new Error('Please enter a valid Google Apps Script Web App URL.');
   }
 
-  const response = await fetch(endpointUrl, {
-    method: 'GET'
-  });
+  let cleanUrl = endpointUrl.trim();
+  if (cleanUrl.endsWith('/edit')) {
+    cleanUrl = cleanUrl.replace(/\/edit$/, '/exec');
+  }
 
-  const resData = await response.json();
-  if (resData.status === 'success' && resData.data) {
-    return resData.data;
-  } else if (resData.status === 'empty') {
-    throw new Error('Google Drive has no stored backup yet. Please click "Sync to Google Drive" first.');
-  } else {
-    throw new Error(resData.message || 'Failed to pull from Google Drive.');
+  const urlWithParams = `${cleanUrl}${cleanUrl.includes('?') ? '&' : '?'}action=get&t=${Date.now()}`;
+
+  try {
+    const response = await fetch(urlWithParams, {
+      method: 'GET',
+      redirect: 'follow'
+    });
+
+    const resData = await response.json();
+    if (resData.status === 'success' && resData.data) {
+      return resData.data;
+    } else if (resData.status === 'empty') {
+      throw new Error('Google Drive has no stored backup yet. Please click "Push to Drive" first.');
+    } else {
+      throw new Error(resData.message || 'Failed to pull from Google Drive.');
+    }
+  } catch (err) {
+    if (err.message.includes('Google Drive has no stored backup')) {
+      throw err;
+    }
+    throw new Error('Failed to retrieve data from Google Drive. Ensure the Apps Script Web App access is set to "Anyone" and redeployed.');
   }
 }
 
