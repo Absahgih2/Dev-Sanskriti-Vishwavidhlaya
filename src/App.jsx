@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Search, UserPlus, UploadCloud, FileText, Calendar, 
   Edit3, Trash2, Globe, Sliders, CheckCircle, Eye, 
   Printer, ArrowLeft, User, Image, BookOpen, 
-  RefreshCw, X, AlertCircle
+  RefreshCw, X, AlertCircle, Download
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import html2canvas from 'html2canvas';
 
 // Import Templates
 import MarksheetTemplate from './components/MarksheetTemplate';
@@ -509,6 +510,44 @@ export default function App() {
   // Trigger print in browser
   const triggerPrint = () => {
     window.print();
+  };
+
+  // Download current document as JPG
+  const downloadAsImage = async (filename = 'document') => {
+    try {
+      // Find the document element to capture
+      const docElement = document.querySelector('.print-only-container > *') ||
+                        document.querySelector('.modal-document-frame > *') ||
+                        document.querySelector('.portal-doc-preview-panel > *');
+      
+      if (!docElement) {
+        alert('No document found to capture');
+        return;
+      }
+
+      // Show loading state
+      const originalTitle = document.title;
+      document.title = 'Generating image...';
+
+      const canvas = await html2canvas(docElement, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        width: docElement.scrollWidth,
+        height: docElement.scrollHeight,
+      });
+
+      const link = document.createElement('a');
+      link.download = `${filename}.jpg`;
+      link.href = canvas.toDataURL('image/jpeg', 0.95);
+      link.click();
+
+      document.title = originalTitle;
+    } catch (err) {
+      console.error('Image generation failed:', err);
+      alert('Failed to generate image. Try using Print > Save as PDF instead.');
+    }
   };
 
   // Filter students based on search input
@@ -1380,6 +1419,9 @@ export default function App() {
                     <button className="btn btn-primary print-action-btn" onClick={triggerPrint}>
                       <Printer size={18} /> Print / Save as PDF
                     </button>
+                    <button className="btn btn-secondary print-action-btn" onClick={() => downloadAsImage(`${portalStudent.name}-${portalActiveTab}-${portalActiveTerm}`)}>
+                      <Download size={18} /> Download JPG
+                    </button>
                   </div>
 
                   {/* Rendering Area */}
@@ -1441,6 +1483,9 @@ export default function App() {
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button className="btn btn-primary btn-sm" onClick={triggerPrint}>
                   <Printer size={14} /> Print / PDF
+                </button>
+                <button className="btn btn-secondary btn-sm" onClick={() => downloadAsImage(`${activeDocStudent.name}-${activeDocTab}-${activeDocTerm}`)}>
+                  <Download size={14} /> JPG
                 </button>
                 <button className="btn btn-outline btn-sm" style={{ padding: '6px' }} onClick={() => setActiveDocStudent(null)}>
                   <X size={18} />

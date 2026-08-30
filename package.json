@@ -15,6 +15,7 @@
     "canvas-confetti": "^1.6.0",
     "cors": "^2.8.5",
     "express": "^4.21.2",
+    "html2canvas": "^1.4.1",
     "jsbarcode": "^3.11.6",
     "lucide-react": "^0.474.0",
     "multer": "^1.4.5-lts.1",
