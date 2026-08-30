@@ -2170,41 +2170,124 @@ export default function App() {
         </div>
       )}
 
-      {/* DOCUMENT PREVIEW MODAL */}
+      {/* DOCUMENT PREVIEW MODAL / STUDIO VIEWER */}
       {activeDocStudent && (
-        <div className="modal-overlay" onClick={() => setActiveDocStudent(null)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '1180px', width: '96vw', maxHeight: '92vh', overflowY: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #eee', paddingBottom: '12px' }}>
-              <h3 style={{ margin: 0 }}>{activeDocStudent.name} - Documents</h3>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <select value={activeDocTerm} onChange={e => setActiveDocTerm(e.target.value)} style={{ padding: '6px 10px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '13px' }}>
-                  {getTermNames(courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())).map(t => <option key={t} value={t}>{t}</option>)}
+        <div className="doc-modal-overlay" onClick={() => setActiveDocStudent(null)}>
+          <div className="doc-modal-frame" onClick={e => e.stopPropagation()}>
+            {/* Topbar: Student Info + Tabs + Actions */}
+            <div className="doc-modal-header">
+              {/* Left: Student identity badge */}
+              <div className="doc-student-info">
+                <div className="doc-student-avatar">
+                  {activeDocStudent.name ? activeDocStudent.name.charAt(0).toUpperCase() : 'S'}
+                </div>
+                <div>
+                  <h3 className="doc-student-name">{activeDocStudent.name}</h3>
+                  <div className="doc-student-badge">
+                    <span>Roll: {activeDocStudent.rollNo}</span>
+                    <span>{activeDocStudent.course}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Center: Clean Segmented Document Tabs */}
+              <div className="doc-nav-tabs">
+                <button 
+                  className={`doc-nav-tab ${activeDocTab === 'marksheet' ? 'active' : ''}`} 
+                  onClick={() => setActiveDocTab('marksheet')}
+                >
+                  <FileText size={14} /> Marksheet
+                </button>
+                <button 
+                  className={`doc-nav-tab ${activeDocTab === 'admit' ? 'active' : ''}`} 
+                  onClick={() => setActiveDocTab('admit')}
+                >
+                  <Calendar size={14} /> Admit Card
+                </button>
+                <button 
+                  className={`doc-nav-tab ${activeDocTab === 'idcard' ? 'active' : ''}`} 
+                  onClick={() => setActiveDocTab('idcard')}
+                >
+                  <UserCheck size={14} /> Identity Card
+                </button>
+                <button 
+                  className={`doc-nav-tab ${activeDocTab === 'result' ? 'active' : ''}`} 
+                  onClick={() => setActiveDocTab('result')}
+                >
+                  <Globe size={14} /> Online Result
+                </button>
+              </div>
+
+              {/* Right: Term select + Action buttons */}
+              <div className="doc-actions-group">
+                <select 
+                  className="doc-term-select"
+                  value={activeDocTerm} 
+                  onChange={e => setActiveDocTerm(e.target.value)}
+                >
+                  {getTermNames(courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())).map(t => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
                 </select>
-                <button className="btn-primary" style={{ padding: '6px 12px', fontSize: '12.5px' }} onClick={() => window.print()}>
-                  <Printer size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Print
+
+                <button className="doc-action-btn doc-btn-print" onClick={() => window.print()}>
+                  <Printer size={14} /> Print
                 </button>
-                <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '12.5px', background: '#0284c7', color: '#fff', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }} onClick={handleDownloadJpg} disabled={isDownloading}>
-                  <Image size={14} /> {isDownloading ? 'Exporting...' : 'Download JPG'}
+
+                <button 
+                  className="doc-action-btn doc-btn-jpg" 
+                  onClick={handleDownloadJpg} 
+                  disabled={isDownloading}
+                >
+                  <Image size={14} /> {isDownloading ? 'Exporting...' : 'JPG'}
                 </button>
-                <button className="btn-primary" style={{ padding: '6px 12px', fontSize: '12.5px', background: '#dc2626', display: 'inline-flex', alignItems: 'center', gap: '4px' }} onClick={handleDownloadPdf} disabled={isDownloading}>
-                  <FileDown size={14} /> {isDownloading ? 'Exporting...' : 'Download PDF'}
+
+                <button 
+                  className="doc-action-btn doc-btn-pdf" 
+                  onClick={handleDownloadPdf} 
+                  disabled={isDownloading}
+                >
+                  <FileDown size={14} /> {isDownloading ? 'Exporting...' : 'PDF'}
                 </button>
-                <button className="modal-close-btn" onClick={() => setActiveDocStudent(null)}><X size={18} /></button>
+
+                <button className="doc-close-icon-btn" onClick={() => setActiveDocStudent(null)} title="Close">
+                  <X size={18} />
+                </button>
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
-              <button className={`doc-tab-btn ${activeDocTab === 'marksheet' ? 'active' : ''}`} onClick={() => setActiveDocTab('marksheet')}>Marksheet</button>
-              <button className={`doc-tab-btn ${activeDocTab === 'admit' ? 'active' : ''}`} onClick={() => setActiveDocTab('admit')}>Admit Card</button>
-              <button className={`doc-tab-btn ${activeDocTab === 'idcard' ? 'active' : ''}`} onClick={() => setActiveDocTab('idcard')}>Identity Card</button>
-              <button className={`doc-tab-btn ${activeDocTab === 'result' ? 'active' : ''}`} onClick={() => setActiveDocTab('result')}>Online Result</button>
-            </div>
-
-            <div style={{ background: '#f9fafb', padding: '20px', borderRadius: '8px', display: 'flex', justifyContent: 'center', overflowX: 'auto' }} ref={docPreviewRef}>
-              {activeDocTab === 'marksheet' && <MarksheetTemplate student={activeDocStudent} course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} termName={activeDocTerm} />}
-              {activeDocTab === 'admit' && <AdmitCardTemplate student={activeDocStudent} course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} termName={activeDocTerm} />}
-              {activeDocTab === 'idcard' && <IdCardTemplate student={activeDocStudent} course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} termName={activeDocTerm} />}
-              {activeDocTab === 'result' && <OnlineResultTemplate student={activeDocStudent} course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} termName={activeDocTerm} />}
+            {/* Document Stage / Studio Viewer Canvas */}
+            <div className="doc-stage" ref={docPreviewRef}>
+              <div className="doc-stage-inner">
+                {activeDocTab === 'marksheet' && (
+                  <MarksheetTemplate 
+                    student={activeDocStudent} 
+                    course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} 
+                    termName={activeDocTerm} 
+                  />
+                )}
+                {activeDocTab === 'admit' && (
+                  <AdmitCardTemplate 
+                    student={activeDocStudent} 
+                    course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} 
+                    termName={activeDocTerm} 
+                  />
+                )}
+                {activeDocTab === 'idcard' && (
+                  <IdCardTemplate 
+                    student={activeDocStudent} 
+                    course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} 
+                    termName={activeDocTerm} 
+                  />
+                )}
+                {activeDocTab === 'result' && (
+                  <OnlineResultTemplate 
+                    student={activeDocStudent} 
+                    course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} 
+                    termName={activeDocTerm} 
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>

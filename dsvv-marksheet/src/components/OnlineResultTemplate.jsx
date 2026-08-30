@@ -58,35 +58,37 @@ export default function OnlineResultTemplate({ student, course, termName }) {
   }, [student, termName, result, cgpa]);
 
   return (
-    <div className="online-result-container" style={{ fontFamily: 'Inter, sans-serif', maxWidth: '750px', margin: '0 auto', padding: '20px', width: '100%' }}>
-      <div style={{ background: 'linear-gradient(135deg, #0d2149, #1a3a6e)', color: '#ffffff', padding: '22px 20px', borderRadius: '12px 12px 0 0', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <img src="Dev_Sanskriti_Vishwavidyalaya Logo2.png" alt="DSVV Logo" style={{ height: '60px', marginBottom: '8px', objectFit: 'contain', display: 'block', margin: '0 auto 8px' }} />
-        <h2 style={{ margin: 0, fontSize: '19px', letterSpacing: '1px', color: '#ffffff', fontWeight: '800', textAlign: 'center' }}>DEV SANSKRITI VISHWAVIDYALAYA</h2>
-        <p style={{ margin: '4px 0 0', fontSize: '11.5px', color: '#e2e8f0', textAlign: 'center' }}>DURG / RAIPUR, CHHATTISGARH</p>
-        <div style={{ marginTop: '10px', display: 'inline-block', background: '#D4AF37', color: '#0d2149', padding: '4px 16px', borderRadius: '4px', fontWeight: 'bold', fontSize: '12px', letterSpacing: '2px', textAlign: 'center' }}>ONLINE RESULT</div>
+    <div className="online-result-container" style={{ fontFamily: 'Inter, sans-serif', maxWidth: '750px', width: '100%', margin: '0 auto', background: '#ffffff', borderRadius: '12px', boxShadow: '0 12px 35px rgba(0,0,0,0.3)', overflow: 'hidden' }}>
+      {/* Header Banner */}
+      <div style={{ background: 'linear-gradient(135deg, #0d2149, #1e3a8a)', color: '#ffffff', padding: '24px 20px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <img src="Dev_Sanskriti_Vishwavidyalaya Logo2.png" alt="DSVV Logo" style={{ height: '58px', marginBottom: '8px', objectFit: 'contain', display: 'block', margin: '0 auto 8px' }} />
+        <h2 style={{ margin: 0, fontSize: '18px', letterSpacing: '0.8px', color: '#ffffff', fontWeight: '800', textAlign: 'center' }}>DEV SANSKRITI VISHWAVIDYALAYA</h2>
+        <p style={{ margin: '4px 0 0', fontSize: '11px', color: '#cbd5e1', letterSpacing: '0.5px', textAlign: 'center' }}>DURG / RAIPUR, CHHATTISGARH</p>
+        <div style={{ marginTop: '10px', display: 'inline-block', background: '#d4af37', color: '#0d2149', padding: '4px 18px', borderRadius: '4px', fontWeight: '800', fontSize: '11.5px', letterSpacing: '1.5px', textAlign: 'center' }}>ONLINE STATEMENT OF MARKS</div>
       </div>
 
-      <div style={{ background: '#fff', padding: '20px', border: '1px solid #e0e0e0', borderTop: 'none', borderRadius: '0 0 12px 12px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px', fontSize: '13px' }}>
-          <div><strong>Name:</strong> {student.name}</div>
-          <div><strong>Father:</strong> {student.fatherName}</div>
-          <div><strong>Mother:</strong> {student.motherName}</div>
-          <div><strong>DOB:</strong> {student.dob}</div>
-          <div><strong>Roll No:</strong> {student.rollNo}</div>
-          <div><strong>Enrollment:</strong> {student.enrollmentNo}</div>
-          <div><strong>Course:</strong> {student.course}</div>
-          <div><strong>Session:</strong> {student.session}</div>
-          <div><strong>Term:</strong> {termName}</div>
+      {/* Profile Details */}
+      <div style={{ padding: '24px 28px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '10px', marginBottom: '20px', fontSize: '12.5px', background: '#f8fafc', padding: '14px 18px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+          <div><span style={{ color: '#64748b', fontWeight: '600' }}>Student Name:</span> <strong style={{ color: '#0d2149', fontSize: '13.5px' }}>{student.name}</strong></div>
+          <div><span style={{ color: '#64748b', fontWeight: '600' }}>Roll No:</span> <strong style={{ color: '#0d2149' }}>{student.rollNo}</strong></div>
+          <div><span style={{ color: '#64748b', fontWeight: '600' }}>Father's Name:</span> <strong style={{ color: '#1e293b' }}>{student.fatherName}</strong></div>
+          <div><span style={{ color: '#64748b', fontWeight: '600' }}>Enrollment No:</span> <strong style={{ color: '#0d2149' }}>{student.enrollmentNo}</strong></div>
+          <div><span style={{ color: '#64748b', fontWeight: '600' }}>Mother's Name:</span> <strong style={{ color: '#1e293b' }}>{student.motherName}</strong></div>
+          <div><span style={{ color: '#64748b', fontWeight: '600' }}>Date of Birth:</span> <strong style={{ color: '#1e293b' }}>{student.dob}</strong></div>
+          <div><span style={{ color: '#64748b', fontWeight: '600' }}>Course:</span> <strong style={{ color: '#0d2149' }}>{student.course}</strong></div>
+          <div><span style={{ color: '#64748b', fontWeight: '600' }}>Session / Term:</span> <strong style={{ color: '#1e293b' }}>{student.session} ({termName})</strong></div>
         </div>
 
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', marginBottom: '16px' }}>
+        {/* Subjects Score Table */}
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12.5px', marginBottom: '20px', border: '1px solid #cbd5e1' }}>
           <thead>
-            <tr style={{ background: '#0d2149', color: '#fff' }}>
-              <th style={{ padding: '8px', border: '1px solid #000' }}>Code</th>
-              <th style={{ padding: '8px', border: '1px solid #000', textAlign: 'left' }}>Subject</th>
-              <th style={{ padding: '8px', border: '1px solid #000' }}>Max</th>
-              <th style={{ padding: '8px', border: '1px solid #000' }}>Obtained</th>
-              <th style={{ padding: '8px', border: '1px solid #000' }}>GP</th>
+            <tr style={{ background: '#0d2149', color: '#ffffff' }}>
+              <th style={{ padding: '10px 8px', border: '1px solid #1e293b', textAlign: 'center', width: '15%' }}>Subject Code</th>
+              <th style={{ padding: '10px 12px', border: '1px solid #1e293b', textAlign: 'left' }}>Subject Title</th>
+              <th style={{ padding: '10px 8px', border: '1px solid #1e293b', textAlign: 'center', width: '14%' }}>Max Marks</th>
+              <th style={{ padding: '10px 8px', border: '1px solid #1e293b', textAlign: 'center', width: '16%' }}>Marks Obtained</th>
+              <th style={{ padding: '10px 8px', border: '1px solid #1e293b', textAlign: 'center', width: '12%' }}>Grade Point</th>
             </tr>
           </thead>
           <tbody>
@@ -94,27 +96,48 @@ export default function OnlineResultTemplate({ student, course, termName }) {
               const ob = marks[sub.code];
               const gp = ob !== undefined && ob !== '' ? getGP(parseInt(ob) || 0, sub.maxMarks || 100) : '—';
               return (
-                <tr key={i} style={{ background: i % 2 === 0 ? '#f9f9f9' : '#fff' }}>
-                  <td style={{ padding: '6px 8px', border: '1px solid #ddd', textAlign: 'center' }}>{sub.code}</td>
-                  <td style={{ padding: '6px 8px', border: '1px solid #ddd' }}>{sub.name}</td>
-                  <td style={{ padding: '6px 8px', border: '1px solid #ddd', textAlign: 'center' }}>{sub.maxMarks || 100}</td>
-                  <td style={{ padding: '6px 8px', border: '1px solid #ddd', textAlign: 'center', fontWeight: 'bold' }}>{ob !== undefined ? ob : '—'}</td>
-                  <td style={{ padding: '6px 8px', border: '1px solid #ddd', textAlign: 'center' }}>{gp}</td>
+                <tr key={i} style={{ background: i % 2 === 0 ? '#f8fafc' : '#ffffff' }}>
+                  <td style={{ padding: '8px', border: '1px solid #e2e8f0', textAlign: 'center', fontWeight: '600', color: '#475569' }}>{sub.code}</td>
+                  <td style={{ padding: '8px 12px', border: '1px solid #e2e8f0', color: '#0f172a', fontWeight: '500' }}>{sub.name}</td>
+                  <td style={{ padding: '8px', border: '1px solid #e2e8f0', textAlign: 'center', color: '#475569' }}>{sub.maxMarks || 100}</td>
+                  <td style={{ padding: '8px', border: '1px solid #e2e8f0', textAlign: 'center', fontWeight: '700', color: '#0d2149' }}>{ob !== undefined ? ob : '—'}</td>
+                  <td style={{ padding: '8px', border: '1px solid #e2e8f0', textAlign: 'center', fontWeight: '600', color: '#334155' }}>{gp}</td>
                 </tr>
               );
             })}
           </tbody>
         </table>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', background: '#f8fafc', padding: '12px', borderRadius: '6px', textAlign: 'center', marginBottom: '16px' }}>
-          <div><div style={{ fontSize: '11px', color: '#64748b' }}>TOTAL MARKS</div><div style={{ fontSize: '16px', fontWeight: 'bold', color: '#0d2149' }}>{totalObtained} / {totalMax}</div></div>
-          <div><div style={{ fontSize: '11px', color: '#64748b' }}>PERCENTAGE</div><div style={{ fontSize: '16px', fontWeight: 'bold', color: '#0d2149' }}>{percentage}%</div></div>
-          <div><div style={{ fontSize: '11px', color: '#64748b' }}>RESULT / DIVISION</div><div style={{ fontSize: '14px', fontWeight: 'bold', color: result === 'PASS' ? '#10b981' : '#dc2626' }}>{result} ({division})</div></div>
+        {/* Results Summary Box */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', background: '#f1f5f9', padding: '14px 18px', borderRadius: '8px', textAlign: 'center', marginBottom: '20px', border: '1px solid #cbd5e1' }}>
+          <div>
+            <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>TOTAL MARKS</div>
+            <div style={{ fontSize: '16px', fontWeight: '800', color: '#0d2149', marginTop: '2px' }}>{totalObtained} / {totalMax}</div>
+          </div>
+          <div>
+            <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>PERCENTAGE</div>
+            <div style={{ fontSize: '16px', fontWeight: '800', color: '#0d2149', marginTop: '2px' }}>{percentage}%</div>
+          </div>
+          <div>
+            <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>RESULT / DIVISION</div>
+            <div style={{ fontSize: '14px', fontWeight: '800', color: result === 'PASS' ? '#16a34a' : '#dc2626', marginTop: '3px' }}>
+              {result} {division !== '—' ? `(${division})` : ''}
+            </div>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #eee', paddingTop: '12px' }}>
-          <canvas ref={qrRef} />
-          <canvas ref={barcodeRef} />
+        {/* Footer Bar: QR and Barcode */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #e2e8f0', paddingTop: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <canvas ref={qrRef} style={{ width: '48px', height: '48px', display: 'block' }} />
+            <div style={{ fontSize: '10px', color: '#64748b' }}>
+              <div style={{ fontWeight: '700', color: '#0d2149' }}>DIGITALLY VERIFIED</div>
+              <div>Official Academic Record</div>
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <canvas ref={barcodeRef} style={{ height: '22px', display: 'block' }} />
+          </div>
         </div>
       </div>
     </div>
