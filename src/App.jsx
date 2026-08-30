@@ -512,10 +512,25 @@ export default function App() {
     window.print();
   };
 
+  // Convert image URL to base64 data URL
+  const imageToBase64 = async (url) => {
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch {
+      return null;
+    }
+  };
+
   // Download current document as JPG
   const downloadAsImage = async (filename = 'document') => {
     try {
-      // Find the document element to capture - try multiple selectors
       const selectors = [
         '.portal-doc-preview-panel .preview-scroll-wrapper > div',
         '.modal-document-frame > div',
@@ -538,6 +553,23 @@ export default function App() {
         return;
       }
 
+      // Pre-fetch all images in the element and convert to base64
+      const images = docElement.querySelectorAll('img');
+      const imageMap = new Map();
+      
+      for (const img of images) {
+        if (img.src && !img.src.startsWith('data:')) {
+          const base64 = await imageToBase64(img.src);
+          if (base64) {
+            imageMap.set(img, img.src);
+            img.src = base64;
+          }
+        }
+      }
+
+      // Wait a tick for images to render
+      await new Promise(r => setTimeout(r, 200));
+
       const canvas = await html2canvas(docElement, {
         scale: 2,
         useCORS: true,
@@ -546,16 +578,12 @@ export default function App() {
         backgroundColor: '#ffffff',
         width: docElement.scrollWidth,
         height: docElement.scrollHeight,
-        onclone: (clonedDoc) => {
-          // Ensure cloned element has proper sizing
-          const clonedEl = clonedDoc.querySelector('.portal-doc-preview-panel') ||
-                          clonedDoc.querySelector('.modal-document-frame');
-          if (clonedEl) {
-            clonedEl.style.overflow = 'visible';
-            clonedEl.style.height = 'auto';
-          }
-        }
       });
+
+      // Restore original image sources
+      for (const [img, originalSrc] of imageMap) {
+        img.src = originalSrc;
+      }
 
       const link = document.createElement('a');
       link.download = `${filename}.jpg`;
