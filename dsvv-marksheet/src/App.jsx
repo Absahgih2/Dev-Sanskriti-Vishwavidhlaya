@@ -6,7 +6,7 @@ import {
   RefreshCw, X, AlertCircle, Building2, Home, Lock,
   LogOut, Check, Ban, Mail, Phone, ShieldCheck, UserCheck,
   Wallet, CreditCard, DollarSign, PlusCircle, ArrowUpRight, ArrowDownLeft,
-  FileDown, Download
+  FileDown, Download, Cloud, Database, Copy, ExternalLink, Save, DownloadCloud
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import MarksheetTemplate, { calculateSemesterDetails } from './components/MarksheetTemplate';
@@ -15,6 +15,13 @@ import OnlineResultTemplate from './components/OnlineResultTemplate';
 import IdCardTemplate from './components/IdCardTemplate';
 import ImageCropper from './components/ImageCropper';
 import { downloadAsJpg, downloadAsPdf } from './utils/downloadDoc';
+import { 
+  pushToGoogleDrive, 
+  pullFromGoogleDrive, 
+  exportDatabaseJson, 
+  importDatabaseJson, 
+  APPS_SCRIPT_TEMPLATE 
+} from './utils/cloudSync';
 import { DEFAULT_COURSES, DEFAULT_STUDENTS, DEFAULT_CENTERS, parseCSVClient } from './defaultData';
 
 export default function App() {
@@ -136,6 +143,15 @@ export default function App() {
   const [centerSessionFilter, setCenterSessionFilter] = useState('');
   const [centerTopupRequestModal, setCenterTopupRequestModal] = useState(false);
 
+  // Google Drive & Cloud Sync State
+  const [googleDriveUrl, setGoogleDriveUrl] = useState(() => localStorage.getItem('dsvv_drive_url') || '');
+  const [autoSyncDrive, setAutoSyncDrive] = useState(() => localStorage.getItem('dsvv_auto_sync') === 'true');
+  const [lastSyncTime, setLastSyncTime] = useState(() => localStorage.getItem('dsvv_last_sync') || '');
+  const [cloudSyncMsg, setCloudSyncMsg] = useState({ type: '', text: '' });
+  const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
+  const [showScriptModal, setShowScriptModal] = useState(false);
+  const backupFileInputRef = useRef(null);
+
   // Document Modal View State
   const [activeDocStudent, setActiveDocStudent] = useState(null);
   const [activeDocTab, setActiveDocTab] = useState('marksheet');
@@ -145,6 +161,85 @@ export default function App() {
   // Download DOM refs
   const docPreviewRef = useRef(null);
   const portalDocPreviewRef = useRef(null);
+
+  // Google Drive Sync Handlers
+  const handleSaveDriveUrl = (url) => {
+    setGoogleDriveUrl(url);
+    localStorage.setItem('dsvv_drive_url', url);
+  };
+
+  const handleToggleAutoSync = (enabled) => {
+    setAutoSyncDrive(enabled);
+    localStorage.setItem('dsvv_auto_sync', enabled ? 'true' : 'false');
+  };
+
+  const handlePushToDrive = async () => {
+    if (!googleDriveUrl.trim()) {
+      setCloudSyncMsg({ type: 'error', text: 'Please paste your Google Apps Script Web App URL first.' });
+      return;
+    }
+    setCloudSyncLoading(true);
+    setCloudSyncMsg({ type: 'info', text: 'Syncing complete university database to Google Drive...' });
+    try {
+      const res = await pushToGoogleDrive(googleDriveUrl.trim(), { students, courses, centers });
+      const timeStr = new Date().toLocaleString();
+      setLastSyncTime(timeStr);
+      localStorage.setItem('dsvv_last_sync', timeStr);
+      setCloudSyncMsg({ type: 'success', text: `Success! ${students.length} students & courses synced to Google Drive at ${timeStr}.` });
+      confetti({ particleCount: 60, spread: 50 });
+    } catch (err) {
+      setCloudSyncMsg({ type: 'error', text: err.message || 'Failed to sync to Google Drive.' });
+    } finally {
+      setCloudSyncLoading(false);
+    }
+  };
+
+  const handlePullFromDrive = async () => {
+    if (!googleDriveUrl.trim()) {
+      setCloudSyncMsg({ type: 'error', text: 'Please paste your Google Apps Script Web App URL first.' });
+      return;
+    }
+    if (!confirm('This will restore all records from Google Drive and update your local database. Proceed?')) return;
+    setCloudSyncLoading(true);
+    setCloudSyncMsg({ type: 'info', text: 'Pulling latest database backup from Google Drive...' });
+    try {
+      const data = await pullFromGoogleDrive(googleDriveUrl.trim());
+      if (data.students) setStudents(data.students);
+      if (data.courses) setCourses(data.courses);
+      if (data.centers) setCenters(data.centers);
+      const timeStr = new Date().toLocaleString();
+      setLastSyncTime(timeStr);
+      localStorage.setItem('dsvv_last_sync', timeStr);
+      setCloudSyncMsg({ type: 'success', text: `Restored ${(data.students || []).length} students from Google Drive successfully!` });
+      confetti({ particleCount: 80, spread: 70 });
+    } catch (err) {
+      setCloudSyncMsg({ type: 'error', text: err.message || 'Failed to restore from Google Drive.' });
+    } finally {
+      setCloudSyncLoading(false);
+    }
+  };
+
+  const handleExportJsonBackup = () => {
+    exportDatabaseJson({ students, courses, centers });
+    setCloudSyncMsg({ type: 'success', text: 'Database backup downloaded (.JSON). You can store this in Google Drive or any folder.' });
+  };
+
+  const handleImportJsonBackup = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const data = await importDatabaseJson(file);
+      if (!confirm(`Restore ${data.students.length} students from backup file?`)) return;
+      if (data.students && data.students.length > 0) setStudents(data.students);
+      if (data.courses && data.courses.length > 0) setCourses(data.courses);
+      if (data.centers && data.centers.length > 0) setCenters(data.centers);
+      setCloudSyncMsg({ type: 'success', text: `Successfully restored ${data.students.length} students from backup file!` });
+      confetti({ particleCount: 70, spread: 60 });
+    } catch (err) {
+      setCloudSyncMsg({ type: 'error', text: 'Invalid backup file: ' + err.message });
+    }
+    if (backupFileInputRef.current) backupFileInputRef.current.value = '';
+  };
 
   // Document Export Handlers
   const handleDownloadJpg = async () => {
@@ -902,6 +997,9 @@ export default function App() {
                 <li className={`sidebar-link ${adminTab === 'centers' ? 'active' : ''}`} onClick={() => setAdminTab('centers')}>
                   <Building2 className="sidebar-link-icon" size={20} /><span>Center Admissions</span>
                 </li>
+                <li className={`sidebar-link ${adminTab === 'cloud-sync' ? 'active' : ''}`} onClick={() => { setCloudSyncMsg({ type: '', text: '' }); setAdminTab('cloud-sync'); }}>
+                  <Cloud className="sidebar-link-icon" size={20} /><span>Google Drive Sync</span>
+                </li>
               </ul>
               
               <div style={{ marginTop: 'auto', padding: '16px 20px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
@@ -1519,6 +1617,205 @@ export default function App() {
                         </table>
                       </div>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {/* GOOGLE DRIVE CLOUD SYNC & DATABASE BACKUP TAB */}
+              {adminTab === 'cloud-sync' && (
+                <div className="tab-content">
+                  <div style={{ marginBottom: '24px' }}>
+                    <h2 style={{ margin: 0, fontSize: '1.6rem', color: '#0d2149', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Cloud size={28} style={{ color: '#0284c7' }} /> Google Drive &amp; Cloud Backup Hub
+                    </h2>
+                    <p style={{ margin: '6px 0 0', fontSize: '13.5px', color: '#64748b' }}>
+                      Safeguard and synchronize all university records, marksheets, and student results with Google Drive so data is never lost.
+                    </p>
+                  </div>
+
+                  {/* Status Banner */}
+                  {cloudSyncMsg.text && (
+                    <div style={{
+                      padding: '12px 18px',
+                      borderRadius: '8px',
+                      marginBottom: '20px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      background: cloudSyncMsg.type === 'error' ? '#fee2e2' : cloudSyncMsg.type === 'success' ? '#dcfce7' : '#e0f2fe',
+                      color: cloudSyncMsg.type === 'error' ? '#991b1b' : cloudSyncMsg.type === 'success' ? '#166534' : '#075985',
+                      border: `1px solid ${cloudSyncMsg.type === 'error' ? '#fca5a5' : cloudSyncMsg.type === 'success' ? '#86efac' : '#7dd3fc'}`,
+                      fontSize: '13.5px',
+                      fontWeight: '600'
+                    }}>
+                      {cloudSyncMsg.type === 'error' ? <AlertCircle size={18} /> : <CheckCircle size={18} />}
+                      <span>{cloudSyncMsg.text}</span>
+                    </div>
+                  )}
+
+                  {/* 2-Column Grid of Sync Cards */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px', marginBottom: '28px' }}>
+                    {/* Card 1: Google Drive Live Sync */}
+                    <div className="card" style={{ padding: '24px', background: '#ffffff', borderRadius: '12px', border: '1.5px solid #cbd5e1', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #eee', paddingBottom: '14px' }}>
+                        <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(2, 132, 199, 0.1)', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Cloud size={24} />
+                        </div>
+                        <div>
+                          <h3 style={{ margin: 0, fontSize: '16px', color: '#0d2149' }}>Google Drive / Sheets Live Sync</h3>
+                          <span style={{ fontSize: '12px', color: '#64748b' }}>Direct two-way connection to Google Cloud</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                          Google Apps Script Web App URL:
+                        </label>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <input 
+                            type="text" 
+                            placeholder="https://script.google.com/macros/s/.../exec"
+                            value={googleDriveUrl}
+                            onChange={e => handleSaveDriveUrl(e.target.value)}
+                            style={{ flex: 1, padding: '9px 12px', fontSize: '13px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                          />
+                          <button 
+                            className="btn-secondary" 
+                            style={{ padding: '9px 14px', fontSize: '12.5px', background: '#0d2149', color: '#fff' }}
+                            onClick={() => {
+                              handleSaveDriveUrl(googleDriveUrl);
+                              setCloudSyncMsg({ type: 'success', text: 'Google Drive Web App URL saved successfully!' });
+                            }}
+                          >
+                            Save
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Auto-Sync Checkbox */}
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', background: '#f8fafc', padding: '10px 14px', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '13px', color: '#1e293b', fontWeight: '600' }}>
+                        <input 
+                          type="checkbox" 
+                          checked={autoSyncDrive} 
+                          onChange={e => handleToggleAutoSync(e.target.checked)}
+                          style={{ width: '16px', height: '16px' }}
+                        />
+                        <span>⚡ Enable Real-Time Cloud Auto-Sync on Save</span>
+                      </label>
+
+                      {lastSyncTime && (
+                        <div style={{ fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Check size={14} style={{ color: '#16a34a' }} />
+                          <span>Last Synced: <strong>{lastSyncTime}</strong></span>
+                        </div>
+                      )}
+
+                      {/* Action Buttons */}
+                      <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}>
+                        <button 
+                          className="btn-primary" 
+                          style={{ flex: 1, background: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px' }}
+                          onClick={handlePushToDrive}
+                          disabled={cloudSyncLoading}
+                        >
+                          <UploadCloud size={16} /> {cloudSyncLoading ? 'Syncing...' : 'Push to Drive'}
+                        </button>
+                        <button 
+                          className="btn-secondary" 
+                          style={{ flex: 1, background: '#0d2149', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px' }}
+                          onClick={handlePullFromDrive}
+                          disabled={cloudSyncLoading}
+                        >
+                          <DownloadCloud size={16} /> Restore from Drive
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Card 2: Offline File Backup & JSON Snapshot */}
+                    <div className="card" style={{ padding: '24px', background: '#ffffff', borderRadius: '12px', border: '1.5px solid #cbd5e1', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #eee', paddingBottom: '14px' }}>
+                        <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Database size={24} />
+                        </div>
+                        <div>
+                          <h3 style={{ margin: 0, fontSize: '16px', color: '#0d2149' }}>Database Snapshot Files</h3>
+                          <span style={{ fontSize: '12px', color: '#64748b' }}>Download complete backup files (.JSON)</span>
+                        </div>
+                      </div>
+
+                      <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '13px', color: '#475569' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                          <span>Total Student Records:</span>
+                          <strong style={{ color: '#0d2149' }}>{students.length}</strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                          <span>Course Programs:</span>
+                          <strong style={{ color: '#0d2149' }}>{courses.length}</strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Admissions Centers:</span>
+                          <strong style={{ color: '#0d2149' }}>{centers.length}</strong>
+                        </div>
+                      </div>
+
+                      <div style={{ fontSize: '12.5px', color: '#64748b', lineHeight: '1.4' }}>
+                        You can download a complete backup of all students, marks, and settings to upload directly to your personal Google Drive or retain for offline security.
+                      </div>
+
+                      {/* Hidden File Input for Restore */}
+                      <input 
+                        type="file" 
+                        accept=".json" 
+                        ref={backupFileInputRef} 
+                        style={{ display: 'none' }} 
+                        onChange={handleImportJsonBackup}
+                      />
+
+                      {/* Action Buttons */}
+                      <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}>
+                        <button 
+                          className="btn-primary" 
+                          style={{ flex: 1, background: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px' }}
+                          onClick={handleExportJsonBackup}
+                        >
+                          <Save size={16} /> Export Backup (.JSON)
+                        </button>
+                        <button 
+                          className="btn-secondary" 
+                          style={{ flex: 1, background: '#475569', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px' }}
+                          onClick={() => backupFileInputRef.current?.click()}
+                        >
+                          <UploadCloud size={16} /> Restore from File
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 30-Second Google Drive Setup Instructions */}
+                  <div className="card" style={{ padding: '24px', background: '#f8fafc', borderRadius: '12px', border: '1px solid #cbd5e1' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                      <h3 style={{ margin: 0, fontSize: '15px', color: '#0d2149' }}>
+                        📖 How to Link Google Drive in 30 Seconds (Free &amp; Automatic)
+                      </h3>
+                      <button 
+                        className="btn-secondary" 
+                        style={{ padding: '6px 14px', fontSize: '12px', background: '#0d2149', color: '#fff', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                        onClick={() => {
+                          navigator.clipboard.writeText(APPS_SCRIPT_TEMPLATE);
+                          setCloudSyncMsg({ type: 'success', text: 'Google Apps Script code copied to clipboard!' });
+                        }}
+                      >
+                        <Copy size={14} /> Copy Google Apps Script Code
+                      </button>
+                    </div>
+
+                    <ol style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', color: '#334155', lineHeight: '1.6' }}>
+                      <li>Open <a href="https://sheets.new" target="_blank" rel="noreferrer" style={{ color: '#0284c7', fontWeight: 'bold' }}>Google Sheets (sheets.new)</a> in your Google Drive account.</li>
+                      <li>In the top menu, click <strong>Extensions &gt; Apps Script</strong>.</li>
+                      <li>Delete any sample code and paste the copied <strong>Google Apps Script Code</strong>.</li>
+                      <li>Click the blue <strong>Deploy &gt; New deployment</strong> button (select type: <strong>Web App</strong>, Execute as: <strong>Me</strong>, Who has access: <strong>Anyone</strong>).</li>
+                      <li>Copy the generated <strong>Web App URL</strong> and paste it into the box above!</li>
+                    </ol>
                   </div>
                 </div>
               )}
