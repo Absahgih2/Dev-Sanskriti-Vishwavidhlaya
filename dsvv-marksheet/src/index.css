@@ -2087,7 +2087,7 @@ table {
   flex: 1;
   height: calc(100% - 16px);
   padding: 1px 3px;
-  background: rgba(230, 243, 249, 0.86);
+  background: #fff;
   text-shadow: 0 0 1px #ffffff, 0 0 2px rgba(255, 255, 255, 0.95);
   box-sizing: border-box;
   overflow: hidden;
