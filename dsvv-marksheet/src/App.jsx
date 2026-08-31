@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Search, UserPlus, UploadCloud, FileText, Calendar,
   Edit3, Trash2, Globe, Sliders, CheckCircle, Eye,
@@ -2291,15 +2292,7 @@ export default function App() {
                     </select>
 
                     <button className="portal-action-btn portal-btn-print" onClick={() => window.print()}>
-                      <Printer size={15} /> Print
-                    </button>
-
-                    <button className="portal-action-btn portal-btn-jpg" onClick={handlePortalDownloadJpg} disabled={isDownloading}>
-                      <Image size={15} /> {isDownloading ? 'Exporting...' : 'Download JPG'}
-                    </button>
-
-                    <button className="portal-action-btn portal-btn-pdf" onClick={handlePortalDownloadPdf} disabled={isDownloading}>
-                      <FileDown size={15} /> {isDownloading ? 'Exporting...' : 'Download PDF'}
+                      <Printer size={15} /> Print / Save as PDF
                     </button>
                   </div>
                 </div>
@@ -2521,7 +2514,7 @@ export default function App() {
         <div className="doc-modal-overlay" onClick={() => setActiveDocStudent(null)}>
           <div className="doc-modal-frame" onClick={e => e.stopPropagation()}>
             {/* Topbar: Student Info + Tabs + Actions */}
-            <div className="doc-modal-header">
+            <div className="doc-modal-header no-print">
               {/* Left: Student identity badge */}
               <div className="doc-student-info">
                 <div className="doc-student-avatar">
@@ -2577,23 +2570,7 @@ export default function App() {
                 </select>
 
                 <button className="doc-action-btn doc-btn-print" onClick={() => window.print()}>
-                  <Printer size={14} /> Print
-                </button>
-
-                <button 
-                  className="doc-action-btn doc-btn-jpg" 
-                  onClick={handleDownloadJpg} 
-                  disabled={isDownloading}
-                >
-                  <Image size={14} /> {isDownloading ? 'Exporting...' : 'JPG'}
-                </button>
-
-                <button 
-                  className="doc-action-btn doc-btn-pdf" 
-                  onClick={handleDownloadPdf} 
-                  disabled={isDownloading}
-                >
-                  <FileDown size={14} /> {isDownloading ? 'Exporting...' : 'PDF'}
+                  <Printer size={14} /> Print / Save as PDF
                 </button>
 
                 <button className="doc-close-icon-btn" onClick={() => setActiveDocStudent(null)} title="Close">
@@ -2647,15 +2624,18 @@ export default function App() {
         }} onCancel={() => setCropSrc(null)} />
       )}
 
-      {/* PRINT CONTAINER */}
-      <div className="print-only-container" style={{ display: 'none' }}>
-        {activeDocStudent && activeDocTab === 'marksheet' && <MarksheetTemplate student={activeDocStudent} course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} termName={activeDocTerm} />}
-        {activeDocStudent && activeDocTab === 'admit' && <AdmitCardTemplate student={activeDocStudent} course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} termName={activeDocTerm} />}
-        {activeDocStudent && activeDocTab === 'result' && <OnlineResultTemplate student={activeDocStudent} course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} termName={activeDocTerm} />}
-        {portalStudent && portalActiveTab === 'marksheet' && <MarksheetTemplate student={portalStudent} course={portalCourse} termName={portalActiveTerm} />}
-        {portalStudent && portalActiveTab === 'admit' && <AdmitCardTemplate student={portalStudent} course={portalCourse} termName={portalActiveTerm} />}
-        {portalStudent && portalActiveTab === 'result' && <OnlineResultTemplate student={portalStudent} course={portalCourse} termName={portalActiveTerm} />}
-      </div>
+      {/* PRINT CONTAINER - rendered directly in body via Portal */}
+      {createPortal(
+        <div className="print-only-container">
+          {activeDocStudent && activeDocTab === 'marksheet' && <MarksheetTemplate student={activeDocStudent} course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} termName={activeDocTerm} />}
+          {activeDocStudent && activeDocTab === 'admit' && <AdmitCardTemplate student={activeDocStudent} course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} termName={activeDocTerm} />}
+          {activeDocStudent && activeDocTab === 'result' && <OnlineResultTemplate student={activeDocStudent} course={courses.find(c => c.name.toLowerCase() === activeDocStudent.course.toLowerCase())} termName={activeDocTerm} />}
+          {portalStudent && portalActiveTab === 'marksheet' && <MarksheetTemplate student={portalStudent} course={portalCourse} termName={portalActiveTerm} />}
+          {portalStudent && portalActiveTab === 'admit' && <AdmitCardTemplate student={portalStudent} course={portalCourse} termName={portalActiveTerm} />}
+          {portalStudent && portalActiveTab === 'result' && <OnlineResultTemplate student={portalStudent} course={portalCourse} termName={portalActiveTerm} />}
+        </div>,
+        document.body
+      )}
 
     </div>
   );

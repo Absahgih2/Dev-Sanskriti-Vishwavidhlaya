@@ -142,19 +142,22 @@ export default function MarksheetTemplate({ student, course, termName }) {
     const maxM = parseInt(sub.maxMarks) || 100;
     const minM = parseInt(sub.minMarks) || 40;
 
-    // Standard theory (60%), practical (30%), assignment (10%) split
-    const thMax = Math.round(maxM * 0.6);
-    const prMax = Math.round(maxM * 0.3);
+    // Standard theory/practical/assignment split with per-subject variation
+    const seed = (sub.code || sub.name || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+    const varFactor = ((seed % 7) - 3) / 100;
+    const thMax = Math.round(maxM * (0.6 + varFactor));
+    const prMax = Math.round(maxM * (0.3 - varFactor * 0.5));
     const asgMax = maxM - thMax - prMax;
 
-    const thMin = Math.round(minM * 0.7);
-    const prMin = Math.round(minM * 0.2);
+    const thMin = Math.round(minM * (0.7 + varFactor));
+    const prMin = Math.round(minM * (0.2 - varFactor * 0.5));
     const asgMin = minM - thMin - prMin;
 
     let thObt = 0, prObt = 0, asgObt = 0;
     if (rawObt !== undefined && rawObt !== '') {
-      thObt = Math.round(obtNum * 0.58);
-      prObt = Math.round(obtNum * 0.32);
+      const variation = ((seed % 11) - 5) / 100;
+      thObt = Math.round(obtNum * (0.58 + variation));
+      prObt = Math.round(obtNum * (0.32 - variation * 0.7));
       asgObt = obtNum - thObt - prObt;
     }
 
@@ -254,12 +257,13 @@ export default function MarksheetTemplate({ student, course, termName }) {
   }
 
   // Determine number of columns for bottom grid (e.g. 3 cols for 6 terms, 4 cols for 8 terms, 2 cols for 4 terms)
-  const gridCols = totalTermsCount > 6 ? 4 : (totalTermsCount > 3 ? 3 : totalTermsCount);
+  const gridCols = totalTermsCount > 6 ? 4 : (totalTermsCount > 3 ? 3 : (totalTermsCount === 1 ? 1 : 2));
+  const isYearCourse = course?.type === 'year';
 
   return (
     <div className="marksheet-a4-landscape-wrapper">
       <div className="marksheet-a4-landscape">
-        {/* Exact High-Res Background Image from sample.jpg */}
+        {/* High-Res Background Image from sample.jpg */}
         <img 
           src="sample.jpg" 
           alt="Marksheet Background" 
@@ -270,7 +274,7 @@ export default function MarksheetTemplate({ student, course, termName }) {
         <div className="marksheet-content-overlay">
           
           {/* Top Spacing to align below pre-printed University Title & Statement of Marks */}
-          <div style={{ height: '80px' }}></div>
+          <div className="ms-header-spacer"></div>
 
           {/* Sr. No. (DMC Number) Top Right */}
           <div className="ms-sr-no">
@@ -282,12 +286,12 @@ export default function MarksheetTemplate({ student, course, termName }) {
             {student.course}
           </div>
 
-          {/* Examination Session Title (e.g. I SEMESTER EXAMINATION DEC-2023) */}
+          {/* Examination Session Title (e.g. IST SEMESTER EXAMINATION DEC-2023) */}
           <div className="ms-exam-session">
             {examSessionText}
           </div>
 
-          {/* Student Profile Info Grid (2 Columns) */}
+          {/* Student Profile Info Grid (2 Columns: Left 62%, Right 38%) */}
           <div className="ms-student-profile-grid">
             <div className="ms-profile-left">
               <div className="ms-profile-row">
@@ -309,21 +313,34 @@ export default function MarksheetTemplate({ student, course, termName }) {
 
             <div className="ms-profile-right">
               <div className="ms-profile-row">
-                <span className="ms-lbl">Roll. No.</span>
+                <span className="ms-lbl-r">Roll. No.</span>
                 <span className="ms-colon">:</span>
                 <span className="ms-val">{student.rollNo}</span>
               </div>
               <div className="ms-profile-row">
-                <span className="ms-lbl">Enroll No.</span>
+                <span className="ms-lbl-r">Enroll No.</span>
                 <span className="ms-colon">:</span>
                 <span className="ms-val">{student.enrollmentNo}</span>
               </div>
             </div>
           </div>
 
-          {/* Main Marks Table */}
+          {/* Main Marks Table (55% Subject, 45% Numerical Marks) */}
           <div className="ms-table-container">
             <table className="ms-main-table">
+              <colgroup>
+                <col style={{ width: '55%' }} />
+                <col style={{ width: '4.33%' }} />
+                <col style={{ width: '4.33%' }} />
+                <col style={{ width: '4.33%' }} />
+                <col style={{ width: '4.33%' }} />
+                <col style={{ width: '4.33%' }} />
+                <col style={{ width: '4.33%' }} />
+                <col style={{ width: '3.83%' }} />
+                <col style={{ width: '3.83%' }} />
+                <col style={{ width: '3.83%' }} />
+                <col style={{ width: '7.5%' }} />
+              </colgroup>
               <thead>
                 <tr>
                   <th rowSpan={2} className="th-subject">Subject</th>
@@ -373,111 +390,169 @@ export default function MarksheetTemplate({ student, course, termName }) {
             </table>
           </div>
 
-          {/* Bottom Summary Section (Multi-Semester Marks Summary & Grand Total / Division) */}
-          <div className="ms-bottom-summary-grid">
-            
-            {/* Multi-Term Summary Table across all 6/8 semesters with SGPA and CGPA */}
-            <div className="ms-multi-term-container">
-              <div className="ms-marks-vertical-tag">
-                <span>M</span><span>A</span><span>R</span><span>K</span><span>S</span>
-              </div>
-              <div 
-                className="ms-terms-grid-table"
-                style={{
-                  gridTemplateColumns: `repeat(${gridCols}, 1fr)`,
-                  gridTemplateRows: totalTermsCount > 3 ? 'repeat(2, 1fr)' : '1fr'
-                }}
-              >
-                {termSummaries.map((ts, idx) => {
-                  const isLastCol = (idx + 1) % gridCols === 0 || idx === totalTermsCount - 1;
-                  const isBottomRow = totalTermsCount > 3 ? idx >= gridCols : true;
+          {/* Bottom section: wraps summary + footer so they anchor together at bottom */}
+          <div className="ms-bottom-section">
+            {/* Bottom Summary Section (Multi-Semester Marks Summary & Grand Total / Division) */}
+            <div className="ms-bottom-summary-grid">
+              
+              {/* Multi-Term Summary Table across all semesters/years */}
+              <div className="ms-multi-term-container">
+                <div className="ms-marks-vertical-tag">
+                  <span>M</span><span>A</span><span>R</span><span>K</span><span>S</span>
+                </div>
+                <div 
+                  className="ms-terms-grid-table"
+                  style={{
+                    gridTemplateColumns: `repeat(${gridCols}, 1fr)`,
+                    gridTemplateRows: totalTermsCount > (gridCols === 1 ? 1 : (gridCols === 2 ? 2 : 2)) ? 'repeat(2, 1fr)' : 'repeat(2, 1fr)'
+                  }}
+                >
+                  {termSummaries.map((ts, idx) => {
+                    const isLastCol = (idx + 1) % gridCols === 0 || idx === totalTermsCount - 1;
+                    const isBottomRow = totalTermsCount > gridCols ? idx >= gridCols : false;
 
-                  return (
-                    <div 
-                      key={ts.term || idx} 
-                      className="ms-term-cell"
-                      style={{
-                        borderRight: isLastCol ? 'none' : '1.5px solid #000',
-                        borderBottom: isBottomRow ? 'none' : '1.5px solid #000'
-                      }}
-                    >
-                      <div className="ms-term-hdr">{ts.romanTerm || ts.term}</div>
-                      <div className="ms-term-body">
-                        <div className="ms-term-scores">
-                          <span>Total: <strong>{ts.total}</strong></span>
-                          <span>Out of: <strong>{ts.max}</strong></span>
-                        </div>
-                        <div className="ms-term-scores" style={{ marginTop: '1px' }}>
-                          <span>SGPA: <strong>{ts.sgpa}</strong></span>
-                          <span>CGPA: <strong>{ts.cgpa}</strong></span>
+                    return (
+                      <div 
+                        key={ts.term || idx} 
+                        className="ms-term-cell"
+                        style={{
+                          borderRight: isLastCol ? 'none' : '1.5px solid #000',
+                          borderBottom: isBottomRow ? 'none' : '1.5px solid #000'
+                        }}
+                      >
+                        <div className="ms-term-hdr">{ts.romanTerm || ts.term}</div>
+                        <div className="ms-term-body">
+                          {isYearCourse ? (
+                            <div className="ms-term-subgrid-year">
+                              <div className="ms-subcol">
+                                <span className="ms-subhdr">Total</span>
+                                <span className="ms-subval">{ts.total}</span>
+                              </div>
+                              <div className="ms-subcol">
+                                <span className="ms-subhdr">Out of</span>
+                                <span className="ms-subval">{ts.max}</span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="ms-term-subgrid-sem">
+                              <div className="ms-sem-row">
+                                <div className="ms-sem-item">
+                                  <span className="ms-sem-k">Total:</span>
+                                  <span className="ms-sem-v">{ts.total}</span>
+                                </div>
+                                <div className="ms-sem-item">
+                                  <span className="ms-sem-k">Out of:</span>
+                                  <span className="ms-sem-v">{ts.max}</span>
+                                </div>
+                              </div>
+                              <div className="ms-sem-row">
+                                <div className="ms-sem-item">
+                                  <span className="ms-sem-k">SGPA:</span>
+                                  <span className="ms-sem-v">{ts.sgpa}</span>
+                                </div>
+                                <div className="ms-sem-item">
+                                  <span className="ms-sem-k">CGPA:</span>
+                                  <span className="ms-sem-v">{ts.cgpa}</span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
 
-            {/* Grand Total, SGPA, CGPA, Result & Division Box */}
-            <div className="ms-grand-summary-box">
-              <table className="ms-grand-table">
-                <thead>
-                  <tr>
-                    <th>GRAND TOTAL</th>
-                    <th>SGPA</th>
-                    <th>CGPA</th>
-                    <th>RESULT</th>
-                    <th>DIVISION</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <div style={{ fontSize: '10px', color: '#475569' }}>Total / Out of</div>
-                      <div style={{ fontSize: '13px', fontWeight: 'bold' }}>
-                        {grandTotalObt} / {grandTotalMax}
-                      </div>
-                    </td>
-                    <td style={{ fontSize: '13px', fontWeight: 'bold' }}>
-                      {currentSGPA}
-                    </td>
-                    <td style={{ fontSize: '13px', fontWeight: 'bold' }}>
-                      {currentCGPA}
-                    </td>
-                    <td style={{ fontSize: '13px', fontWeight: 'bold', color: result === 'Pass' ? '#000' : '#dc2626' }}>
-                      {result}
-                    </td>
-                    <td style={{ fontSize: '13px', fontWeight: 'bold' }}>
-                      {division}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-          </div>
-
-          {/* Footer Legends, Centered Official Seal & Registrar Signature */}
-          <div className="ms-footer-bar">
-            <div className="ms-legend-left">
-              <div>C = CARRY FORWARD</div>
-              <div>* = FAIL IN SUBJECT</div>
-              <div>G = PASS BY GRACE</div>
-              <div>ABS = ABSENT</div>
-              <div className="ms-issue-date">
-                Date of Issue <strong>{displayIssueDate}</strong>
+              {/* Grand Total, SGPA, CGPA, Result & Division Box */}
+              <div className="ms-grand-summary-box">
+                {isYearCourse ? (
+                  <table className="ms-grand-table">
+                    <thead>
+                      <tr>
+                        <th colSpan={2}>GRAND TOTAL</th>
+                        <th rowSpan={2} style={{ verticalAlign: 'middle', width: '25%' }}>RESULT</th>
+                        <th rowSpan={2} style={{ verticalAlign: 'middle', width: '25%' }}>DIVISION</th>
+                      </tr>
+                      <tr className="ms-grand-subhdr-row">
+                        <th style={{ width: '25%' }}>Total</th>
+                        <th style={{ width: '25%' }}>Out of</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="ms-grand-metric-val">{grandTotalObt}</td>
+                        <td className="ms-grand-metric-val">{grandTotalMax}</td>
+                        <td className="ms-grand-metric-val" style={{ color: result === 'Pass' ? '#000' : '#dc2626' }}>
+                          {result}
+                        </td>
+                        <td className="ms-grand-metric-val">
+                          {division}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                ) : (
+                  <table className="ms-grand-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: '30%' }}>GRAND TOTAL</th>
+                        <th style={{ width: '16%' }}>SGPA</th>
+                        <th style={{ width: '16%' }}>CGPA</th>
+                        <th style={{ width: '18%' }}>RESULT</th>
+                        <th style={{ width: '20%' }}>DIVISION</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div className="ms-grand-sublbl">Total / Out of</div>
+                          <div className="ms-grand-subval">
+                            {grandTotalObt} / {grandTotalMax}
+                          </div>
+                        </td>
+                        <td className="ms-grand-metric-val">
+                          {currentSGPA}
+                        </td>
+                        <td className="ms-grand-metric-val">
+                          {currentCGPA}
+                        </td>
+                        <td className="ms-grand-metric-val" style={{ color: result === 'Pass' ? '#000' : '#dc2626' }}>
+                          {result}
+                        </td>
+                        <td className="ms-grand-metric-val">
+                          {division}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                )}
               </div>
+
             </div>
 
-            {/* University Seal Image positioned bottom center, elevated slightly with Seal text */}
-            <div className="ms-seal-center">
-              <img src="Seal.png" alt="University Seal" className="ms-seal-img" />
-              <span className="ms-seal-text">Seal</span>
-            </div>
+            {/* Footer Legends, Centered Official Seal & Registrar Signature */}
+            <div className="ms-footer-bar">
+              <div className="ms-legend-left">
+                <div>C = CARRY FORWARD</div>
+                <div>* = FAIL IN SUBJECT</div>
+                <div>G = PASS BY GRACE</div>
+                <div>ABS = ABSENT</div>
+                <div className="ms-issue-date">
+                  Date of Issue <strong>{displayIssueDate}</strong>
+                </div>
+              </div>
 
-            <div className="ms-signature-right">
-              <img src="Signature.png" alt="Signature" className="ms-sig-img" />
-              <div className="ms-sig-lbl">Registrar</div>
+              {/* University Seal Image positioned bottom center */}
+              <div className="ms-seal-center">
+                <img src="Seal.png" alt="University Seal" className="ms-seal-img" />
+                <span className="ms-seal-text">Seal</span>
+              </div>
+
+              <div className="ms-signature-right">
+                <img src="Signature.png" alt="Signature" className="ms-sig-img" />
+                <div className="ms-sig-lbl">Registrar</div>
+              </div>
             </div>
           </div>
 
