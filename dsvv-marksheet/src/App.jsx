@@ -2291,7 +2291,14 @@ export default function App() {
                       {Object.keys(portalStudent.marksheets || {}).map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
 
-                    <button className="portal-action-btn portal-btn-print" onClick={() => window.print()}>
+                    <button className="portal-action-btn portal-btn-print" onClick={() => {
+                      const student = portalStudent;
+                      const name = student?.name || 'Marksheet';
+                      const roll = student?.rollNo || '';
+                      document.title = `${name}_${roll}_${portalActiveTab}`;
+                      window.print();
+                      setTimeout(() => { document.title = 'DSVV Document Portal'; }, 1000);
+                    }}>
                       <Printer size={15} /> Print / Save as PDF
                     </button>
                   </div>
@@ -2569,7 +2576,14 @@ export default function App() {
                   ))}
                 </select>
 
-                <button className="doc-action-btn doc-btn-print" onClick={() => window.print()}>
+                <button className="doc-action-btn doc-btn-print" onClick={() => {
+                  const student = activeDocStudent;
+                  const name = student?.name || 'Marksheet';
+                  const roll = student?.rollNo || '';
+                  document.title = `${name}_${roll}_${activeDocTab}`;
+                  window.print();
+                  setTimeout(() => { document.title = 'DSVV Document Portal'; }, 1000);
+                }}>
                   <Printer size={14} /> Print / Save as PDF
                 </button>
 

@@ -1843,7 +1843,7 @@ table {
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: #000;
-  margin-top: 2px;
+  margin-top: 8px;
   margin-bottom: 2px;
   line-height: 1.2;
 }
@@ -2021,18 +2021,21 @@ table {
 }
 
 .ms-marks-vertical-tag {
-  background: #000;
-  color: #fff;
-  width: 20px;
+  background: #000000;
+  color: #ffffff;
+  width: 22px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
-  font-size: 10px;
-  font-weight: bold;
+  font-size: 11px;
+  font-weight: 800;
   letter-spacing: 0.05em;
-  padding: 1px 0;
+  padding: 2px 0;
   flex-shrink: 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  color-adjust: exact;
 }
 
 .ms-terms-grid-table {
@@ -2113,7 +2116,7 @@ table {
 }
 
 .ms-subval {
-  font-size: 10.5px;
+  font-size: 9px;
   font-weight: 800;
   color: #000;
 }
@@ -2138,20 +2141,20 @@ table {
   display: flex;
   align-items: center;
   gap: 3px;
-  font-size: 11px;
+  font-size: 9px;
   line-height: 1.1;
 }
 
 .ms-sem-k {
   font-weight: 500;
   color: #111;
-  font-size: 11px;
+  font-size: 9px;
 }
 
 .ms-sem-v {
   font-weight: 700;
   color: #000;
-  font-size: 14px;
+  font-size: 10px;
 }
 
 .ms-grand-summary-box {
@@ -2567,6 +2570,30 @@ table {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
+  }
+
+  /* Force black backgrounds to print */
+  .ms-marks-vertical-tag {
+    background: #000 !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .ms-marks-vertical-tag span {
+    color: #fff !important;
+    background: transparent !important;
+  }
+
+  .ms-term-hdr {
+    background: #000000 !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .ms-multi-term-container {
+    border-color: #000 !important;
   }
 
   /* Hide everything EXCEPT the print-only-container */
