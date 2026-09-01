@@ -1340,10 +1340,20 @@ table {
   .portal-container { padding: 20px 12px; }
   .portal-hub { padding: 16px; }
   .portal-view-wrapper { padding: 20px 12px; }
-  .portal-doc-preview { min-height: auto; padding: 16px; }
+  .portal-doc-preview { min-height: auto; padding: 12px 8px; }
 
   .header-nav-actions { gap: 6px; }
   .header-nav-actions button { font-size: 11px !important; padding: 6px 10px !important; }
+
+  .doc-modal-frame { border-radius: 8px; }
+  .doc-modal-header { padding: 8px 12px; gap: 8px; }
+  .doc-nav-tabs { gap: 2px; padding: 2px; }
+  .doc-nav-tab { padding: 5px 10px; font-size: 11px; }
+  .doc-stage { padding: 12px 8px; }
+  .doc-stage-inner { min-width: 1050px; }
+
+  .portal-doc-preview .marksheet-a4-landscape-wrapper { padding: 0; }
+  .portal-view .header-univ-title { font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
 }
 
 @media (max-width: 480px) {
@@ -1714,12 +1724,13 @@ table {
   padding: 36px 20px;
   min-height: 620px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
   overflow-x: auto;
   width: 100%;
   box-sizing: border-box;
   box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Portal Light Theme Header Overrides */
@@ -1790,16 +1801,19 @@ table {
 
 .marksheet-a4-landscape-wrapper {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
   width: 100%;
+  min-width: 0;
   overflow-x: auto;
   padding: 10px 0;
+  -webkit-overflow-scrolling: touch;
 }
 
 .marksheet-a4-landscape {
+  min-width: 1050px;
   width: 1050px;
-  height: 742px; /* Exact 297x210 A4 Landscape aspect ratio */
+  height: 742px;
   position: relative;
   background: #ffffff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -1807,6 +1821,7 @@ table {
   color: #000000;
   overflow: hidden;
   box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .marksheet-bg-img {
@@ -2407,6 +2422,10 @@ table {
   padding: 3px;
   border-radius: 8px;
   gap: 4px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .doc-nav-tab {
@@ -2524,16 +2543,18 @@ table {
   background: #1e293b;
   padding: 30px 20px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
   min-height: 0;
+  -webkit-overflow-scrolling: touch;
 }
 
 .doc-stage-inner {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  min-width: 1050px;
+  width: fit-content;
 }
 
 .doc-tab-btn {
