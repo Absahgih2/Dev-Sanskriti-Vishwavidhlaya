@@ -509,6 +509,44 @@ footer {
 
 /* ===== Mobile Responsiveness ===== */
 
+/* Top Bar Mobile */
+@media (max-width: 768px) {
+  .top-bar {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.4rem;
+    padding: 0.4rem 5%;
+  }
+  .top-bar-left {
+    justify-content: center;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+  }
+  .top-bar-left a { font-size: 0.75rem; }
+  .top-bar-right {
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .top-bar-right a {
+    font-size: 0.72rem;
+    padding: 0.3rem 0.5rem;
+    background: rgba(255,255,255,0.12);
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .site-header {
+    padding: 0.6rem 5%;
+  }
+  .header-logo, .logo-img {
+    height: 70px;
+  }
+  .main-nav .nav-container {
+    justify-content: space-between;
+    padding: 0 3%;
+  }
+}
+
 /* Tablet: <= 992px */
 @media (max-width: 992px) {
   .gallery-grid {

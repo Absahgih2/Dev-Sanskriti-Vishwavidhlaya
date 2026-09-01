@@ -60,7 +60,26 @@
     .social-links { display: flex; gap: 1rem; margin-top: 1rem; }
     .social-links a { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; }
     .social-links a:hover { background: var(--secondary-color); transform: translateY(-3px); }
-    @media (max-width: 768px) { .footer-container { grid-template-columns: 1fr; } .hamburger { display: flex; } .main-nav .nav-links { display: none; } .motto-text { font-size: 1.5rem; } }
+    @media (max-width: 768px) {
+      .top-bar { flex-direction: column; }
+      .top-bar-left { justify-content: center; gap: 0.75rem; font-size: 0.75rem; }
+      .top-bar-left a { font-size: 0.75rem; }
+      .top-bar-right { justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
+      .top-bar-right a { font-size: 0.72rem; padding: 0.3rem 0.5rem; background: rgba(255,255,255,0.12); border-radius: 4px; white-space: nowrap; }
+      .site-header { padding: 0.6rem 5%; }
+      .header-logo { height: 70px; }
+      .main-nav .nav-container { justify-content: space-between; padding: 0 3%; }
+      .main-nav .nav-links { position: fixed; top: 0; right: -100%; width: 80%; max-width: 320px; height: 100vh; background: white; flex-direction: column; padding: 4.5rem 1.5rem 2rem; box-shadow: -5px 0 20px rgba(0,0,0,0.2); transition: right 0.35s ease; z-index: 999; align-items: flex-start; overflow-y: auto; }
+      .main-nav .nav-links.active { right: 0; }
+      .main-nav .nav-links li { width: 100%; flex: none; }
+      .main-nav .nav-links a { font-size: 0.9rem; padding: 0.8rem 0; width: 100%; border-bottom: 1px solid #f0f0f0; justify-content: space-between; }
+      .main-nav .dropdown-menu { position: static; box-shadow: none; border: none; background: rgba(0,0,0,0.03); border-radius: 6px; margin-top: 0.25rem; min-width: auto; }
+      .main-nav .dropdown-menu li a { font-size: 0.85rem; padding: 0.5rem 1rem; }
+      .main-nav .has-dropdown.open > .dropdown-menu { display: block; }
+      .hamburger { display: flex; }
+      .footer-container { grid-template-columns: 1fr; }
+      .motto-text { font-size: 1.5rem; }
+    }
   </style>
 </head>
 <body>
