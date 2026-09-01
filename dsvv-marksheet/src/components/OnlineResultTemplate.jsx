@@ -69,7 +69,7 @@ export default function OnlineResultTemplate({ student, course, termName }) {
 
       {/* Profile Details */}
       <div style={{ padding: '24px 28px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '10px', marginBottom: '20px', fontSize: '12.5px', background: '#f8fafc', padding: '14px 18px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '10px', marginBottom: '20px', fontSize: '12.5px', background: '#f8fafc', padding: '14px 18px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
           <div><span style={{ color: '#64748b', fontWeight: '600' }}>Student Name:</span> <strong style={{ color: '#0d2149', fontSize: '13.5px' }}>{student.name}</strong></div>
           <div><span style={{ color: '#64748b', fontWeight: '600' }}>Roll No:</span> <strong style={{ color: '#0d2149' }}>{student.rollNo}</strong></div>
           <div><span style={{ color: '#64748b', fontWeight: '600' }}>Father's Name:</span> <strong style={{ color: '#1e293b' }}>{student.fatherName}</strong></div>
@@ -81,7 +81,8 @@ export default function OnlineResultTemplate({ student, course, termName }) {
         </div>
 
         {/* Subjects Score Table */}
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12.5px', marginBottom: '20px', border: '1px solid #cbd5e1' }}>
+        <div style={{ overflowX: 'auto', marginBottom: '20px' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12.5px', border: '1px solid #cbd5e1' }}>
           <thead>
             <tr style={{ background: '#0d2149', color: '#ffffff' }}>
               <th style={{ padding: '10px 8px', border: '1px solid #1e293b', textAlign: 'center', width: '15%' }}>Subject Code</th>
@@ -107,9 +108,10 @@ export default function OnlineResultTemplate({ student, course, termName }) {
             })}
           </tbody>
         </table>
+        </div>
 
         {/* Results Summary Box */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', background: '#f1f5f9', padding: '14px 18px', borderRadius: '8px', textAlign: 'center', marginBottom: '20px', border: '1px solid #cbd5e1' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(150px, 100%), 1fr))', gap: '12px', background: '#f1f5f9', padding: '14px 18px', borderRadius: '8px', textAlign: 'center', marginBottom: '20px', border: '1px solid #cbd5e1' }}>
           <div>
             <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>TOTAL MARKS</div>
             <div style={{ fontSize: '16px', fontWeight: '800', color: '#0d2149', marginTop: '2px' }}>{totalObtained} / {totalMax}</div>

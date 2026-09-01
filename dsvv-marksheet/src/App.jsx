@@ -1020,7 +1020,7 @@ export default function App() {
               {/* DASHBOARD TAB (EXACT GURUKUL CARD LAYOUT WITH PUBLISH, PARTIAL, COMPLETE) */}
               {adminTab === 'dashboard' && (
                 <div className="tab-content">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap' }}>
                     <div>
                       <h2 style={{ margin: 0, fontSize: '1.6rem', color: '#0d2149' }}>Student Records Dashboard</h2>
                       <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>Total registered students: {students.length}</p>
@@ -1045,7 +1045,7 @@ export default function App() {
                       <p>No student records found.</p>
                     </div>
                   ) : (
-                    <div className="student-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
+                    <div className="student-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(340px, 100%), 1fr))', gap: '20px' }}>
                       {filteredStudents.map(s => (
                         <div key={s.id} style={{ background: '#fff', borderRadius: '14px', padding: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                           
@@ -1148,7 +1148,7 @@ export default function App() {
 
               {/* ADD/EDIT STUDENT (EXACT GURUKUL WORKFLOW & LAYOUT) */}
               {adminTab === 'add-student' && (
-                <div style={{ background: '#fff', borderRadius: '16px', padding: '36px 40px', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', maxWidth: '1080px', margin: '0 auto' }}>
+                <div style={{ background: '#fff', borderRadius: '16px', padding: 'clamp(16px, 4vw, 36px) clamp(12px, 3vw, 40px)', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', maxWidth: '1080px', margin: '0 auto' }}>
                   <div style={{ marginBottom: '28px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
                     <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '700', color: '#0f172a' }}>
                       {editingStudentId ? (isCompleteEdit ? 'Complete Structure Edit' : 'Partial Student Edit') : 'Register New Student'}
@@ -1160,7 +1160,7 @@ export default function App() {
 
                   <form onSubmit={handleSaveStudent}>
                     {/* Row 1: Student Name, Father's Name, Mother's Name (3 columns) */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '20px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: '20px', marginBottom: '20px' }}>
                       <div className="form-group">
                         <label style={{ fontSize: '11px', fontWeight: '700', color: '#475569', letterSpacing: '0.05em' }}>STUDENT NAME</label>
                         <input 
@@ -1256,7 +1256,7 @@ export default function App() {
                     </div>
 
                     {/* Row 3: Roll Number, Enrollment Number (2 columns) */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '24px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: '20px', marginBottom: '24px' }}>
                       <div className="form-group">
                         <label style={{ fontSize: '11px', fontWeight: '700', color: '#475569', letterSpacing: '0.05em' }}>ROLL NUMBER</label>
                         <input 
@@ -1397,6 +1397,7 @@ export default function App() {
                         </div>
 
                         {/* Subject Marks Table */}
+                        <div style={{ overflowX: 'auto' }}>
                         <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '10px', overflow: 'hidden' }}>
                           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <thead>
@@ -1431,6 +1432,7 @@ export default function App() {
                             </tbody>
                           </table>
                         </div>
+                        </div>
 
                       </div>
                     )}
@@ -1461,7 +1463,7 @@ export default function App() {
               {adminTab === 'courses' && (
                 <div>
                   <h2 style={{ fontSize: '1.6rem', color: '#0d2149', marginBottom: '20px' }}>Course CSV Manager</h2>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))', gap: '24px' }}>
                     <div className="form-container">
                       <h3>Upload New Course CSV</h3>
                       <form onSubmit={handleCsvUpload}>
@@ -1655,7 +1657,7 @@ export default function App() {
                   )}
 
                   {/* 2-Column Grid of Sync Cards */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px', marginBottom: '28px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(360px, 100%), 1fr))', gap: '20px', marginBottom: '28px' }}>
                     {/* Card 1: Google Drive Live Sync */}
                     <div className="card" style={{ padding: '24px', background: '#ffffff', borderRadius: '12px', border: '1.5px solid #cbd5e1', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #eee', paddingBottom: '14px' }}>
@@ -2012,7 +2014,7 @@ export default function App() {
 
             {/* TAB 2: REGISTER NEW CANDIDATE VIA CENTER */}
             {centerTab === 'add-candidate' && (
-              <div style={{ background: '#fff', borderRadius: '16px', padding: '36px 40px', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', maxWidth: '1080px', margin: '0 auto' }}>
+              <div style={{ background: '#fff', borderRadius: '16px', padding: 'clamp(16px, 4vw, 36px) clamp(12px, 3vw, 40px)', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', maxWidth: '1080px', margin: '0 auto' }}>
                 <div style={{ marginBottom: '24px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
                     <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '700', color: '#0f172a' }}>Register Candidate for Examination</h2>
@@ -2025,7 +2027,7 @@ export default function App() {
 
                 <form onSubmit={handleSaveStudent}>
                   {/* Row 1 */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '20px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: '20px', marginBottom: '20px' }}>
                     <div className="form-group">
                       <label style={{ fontSize: '11px', fontWeight: '700', color: '#475569' }}>STUDENT NAME</label>
                       <input style={{ padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #cbd5e1' }} value={formData.name} onChange={e => setFormData(p => ({ ...p, name: e.target.value.toUpperCase() }))} required />
@@ -2064,7 +2066,7 @@ export default function App() {
                   </div>
 
                   {/* Row 3 */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '24px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: '20px', marginBottom: '24px' }}>
                     <div className="form-group">
                       <label style={{ fontSize: '11px', fontWeight: '700', color: '#475569' }}>ROLL NUMBER</label>
                       <input style={{ padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #cbd5e1', background: '#f8fafc' }} value={formData.rollNo} onChange={e => setFormData(p => ({ ...p, rollNo: e.target.value }))} required />

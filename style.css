@@ -337,9 +337,6 @@ footer {
   opacity: 1;
   color: var(--secondary-color);
 }
-  opacity: 1;
-  color: var(--secondary-color);
-}
 
 .social-links {
   display: flex;
