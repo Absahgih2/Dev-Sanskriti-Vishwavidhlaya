@@ -3,6 +3,12 @@
    Glassmorphism Admin Dashboard
    ============================================================ */
 
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
 :root {
   /* Core palette */
   --color-primary: #8B4513;
@@ -958,6 +964,8 @@ table {
   max-width: 800px;
   margin: 0 auto;
   font-size: 0.9rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .print-container h1 {
@@ -2353,6 +2361,7 @@ table {
   overflow: hidden;
   position: relative;
   animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 0;
 }
 
 .doc-modal-header {
@@ -2654,5 +2663,83 @@ table {
     box-shadow: none !important;
     transform: none !important;
     overflow: hidden !important;
+  }
+}
+
+/* ============================================================
+   Mobile: Ensure ALL fixed-width documents scroll properly
+   ============================================================ */
+
+@media (max-width: 1100px) {
+  .marksheet-a4-landscape-wrapper {
+    justify-content: flex-start;
+    padding: 10px 8px;
+  }
+
+  .marksheet-a4-landscape {
+    min-width: 1050px;
+    flex-shrink: 0;
+  }
+
+  .doc-stage {
+    justify-content: flex-start;
+    padding: 20px 12px;
+  }
+
+  .doc-stage-inner {
+    min-width: 1050px;
+  }
+
+  .portal-doc-preview {
+    justify-content: flex-start;
+    padding: 20px 12px;
+  }
+
+  .portal-doc-preview .marksheet-a4-landscape-wrapper {
+    padding: 0;
+  }
+
+  .print-container {
+    max-width: none;
+    min-width: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admit-card-layout {
+    min-width: 794px;
+  }
+
+  .idcard-dual-wrapper {
+    justify-content: center;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .online-result-container {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .portal-tabs-group {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+  }
+
+  .portal-tab-btn {
+    flex-shrink: 0;
+  }
+
+  .doc-nav-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+  }
+
+  .doc-nav-tab {
+    flex-shrink: 0;
   }
 }
