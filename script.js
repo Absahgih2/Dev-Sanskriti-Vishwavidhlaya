@@ -138,6 +138,7 @@ function openCourseModal(programId) {
     if (title.includes('m.phil') && c.name.includes('Master of Philosophy')) return true;
     if (title.includes('ph.d') && c.name.includes('Doctor of Philosophy')) return true;
     if (title.includes('bachelor of library') && c.name.includes('Bachelor of Library')) return true;
+    if (title.includes('b.n.y.s') && c.name.includes('B.N.Y.S.')) return true;
     return false;
   });
 

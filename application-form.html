@@ -546,7 +546,7 @@
               <button type="button" class="photo-btn" onclick="document.getElementById('photoInput').click()">
                 <i class="fas fa-upload"></i> Choose Photo
               </button>
-              <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="previewPhoto(event)" required>
+              <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="previewPhoto(event)">
             </div>
           </div>
 
@@ -827,15 +827,15 @@
               </select>
             </div>
             <div class="form-group">
-              <label>Program <span class="required">*</span></label>
+              <label>Program / Degree <span class="required">*</span></label>
               <select name="Program" required id="programSelect">
-                <option value="">Select Program</option>
+                <option value="">Select Program / Degree</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Specialization <span class="required">*</span></label>
+              <label>Subject / Specialization <span class="required">*</span></label>
               <select name="Specialization" required id="specializationSelect">
-                <option value="">Select Specialization</option>
+                <option value="">Select Subject / Specialization</option>
               </select>
             </div>
           </div>
@@ -924,8 +924,55 @@
       reader.readAsDataURL(event.target.files[0]);
     }
 
-    // Step Navigation
+    // Validate a specific step
+    function validateStep(stepNum) {
+      const section = document.getElementById('step' + stepNum);
+      if (!section) return true;
+      const inputs = section.querySelectorAll('input:not([disabled]), select:not([disabled]), textarea:not([disabled])');
+      for (let input of inputs) {
+        if (input.hasAttribute('required')) {
+          if (input.type === 'radio') {
+            const checked = section.querySelector('input[name="' + input.name + '"]:checked');
+            if (!checked) {
+              alert('Please select your ' + (input.name.replace(/_/g, ' ') || 'gender') + '.');
+              return false;
+            }
+          } else if (input.type === 'checkbox') {
+            if (!input.checked) {
+              alert('Please check the required agreement box.');
+              input.focus();
+              return false;
+            }
+          } else if (!input.value.trim()) {
+            input.focus();
+            input.reportValidity();
+            return false;
+          } else if (!input.checkValidity()) {
+            input.focus();
+            input.reportValidity();
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    function getCurrentStep() {
+      const activeSection = document.querySelector('.form-section.active');
+      return activeSection ? parseInt(activeSection.id.replace('step', '')) : 1;
+    }
+
+    // Step Navigation with validation
     function nextStep(step) {
+      const current = getCurrentStep();
+      if (step > current) {
+        for (let s = current; s < step; s++) {
+          if (!validateStep(s)) {
+            return false;
+          }
+        }
+      }
+
       document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
       document.getElementById('step' + step).classList.add('active');
 
@@ -943,7 +990,20 @@
     }
 
     function prevStep(step) {
-      nextStep(step);
+      document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+      document.getElementById('step' + step).classList.add('active');
+
+      document.querySelectorAll('.step').forEach(s => {
+        const sNum = parseInt(s.dataset.step);
+        s.classList.remove('active', 'completed');
+        if (sNum < step) s.classList.add('completed');
+        if (sNum === step) s.classList.add('active');
+      });
+      document.querySelectorAll('.step-line').forEach((l, i) => {
+        l.classList.toggle('active', i < step - 1);
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // Address Toggle
@@ -957,8 +1017,9 @@
     // Program Data — all 25 courses from program-cards.js
     const programs = {
       ug: {
-        programs: ['Bachelor of Science (B.Sc.)','Bachelor of Arts (B.A.)','Bachelor of Commerce (B.Com)','Bachelor of Computer Application (B.C.A.)','Bachelor of Business Administration (B.B.A.)','Bachelor of Technology (B.Tech.)','Bachelor of Social Work (B.S.W.)','Bachelor of Hotel Management (B.H.M.)','Bachelor of Library & Information Science'],
+        programs: ['Bachelor of Naturopathy & Yogic Sciences (B.N.Y.S.)','Bachelor of Science (B.Sc.)','Bachelor of Arts (B.A.)','Bachelor of Commerce (B.Com)','Bachelor of Computer Application (B.C.A.)','Bachelor of Business Administration (B.B.A.)','Bachelor of Technology (B.Tech.)','Bachelor of Social Work (B.S.W.)','Bachelor of Hotel Management (B.H.M.)','Bachelor of Library & Information Science'],
         specializations: {
+          'Bachelor of Naturopathy & Yogic Sciences (B.N.Y.S.)': ['Naturopathy & Yogic Sciences'],
           'Bachelor of Science (B.Sc.)': ['Yoga','I.T.','C.S.','P.C.B.','P.C.M.','Microbiology','Food Nutrition & Dietetics'],
           'Bachelor of Arts (B.A.)': ['General','Yoga Studies & Sports'],
           'Bachelor of Commerce (B.Com)': ['Commerce'],
@@ -1014,8 +1075,8 @@
       const programSelect = document.getElementById('programSelect');
       const specSelect = document.getElementById('specializationSelect');
 
-      programSelect.innerHTML = '<option value="">Select Program</option>';
-      specSelect.innerHTML = '<option value="">Select Specialization</option>';
+      programSelect.innerHTML = '<option value="">Select Program / Degree</option>';
+      specSelect.innerHTML = '<option value="">Select Subject / Specialization</option>';
 
       if (level && programs[level]) {
         programs[level].programs.forEach(p => {
@@ -1029,23 +1090,35 @@
       const program = this.value;
       const specSelect = document.getElementById('specializationSelect');
 
-      specSelect.innerHTML = '<option value="">Select Specialization</option>';
+      specSelect.innerHTML = '<option value="">Select Subject / Specialization</option>';
 
       if (level && program && programs[level].specializations[program]) {
-        programs[level].specializations[program].forEach(s => {
+        const specs = programs[level].specializations[program];
+        specs.forEach(s => {
           specSelect.innerHTML += '<option value="' + s + '">' + s + '</option>';
         });
+        if (specs.length === 1) {
+          specSelect.value = specs[0];
+        }
       }
     });
 
-    // Form Validate (form submits natively to FormSubmit.co)
-    function validateForm() {
-      if (!document.getElementById('agreeTerms').checked) {
-        alert('Please agree to the terms and conditions.');
-        return false;
+    // Form Submit Handler
+    document.getElementById('applicationForm').addEventListener('submit', function(e) {
+      for (let s = 1; s <= 5; s++) {
+        if (!validateStep(s)) {
+          e.preventDefault();
+          prevStep(s);
+          return false;
+        }
+      }
+
+      const submitBtn = document.querySelector('.btn-submit');
+      if (submitBtn) {
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting Application...';
       }
       return true;
-    }
+    });
   </script>
 
   <script>

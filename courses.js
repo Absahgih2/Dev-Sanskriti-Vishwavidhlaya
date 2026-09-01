@@ -2,7 +2,7 @@ const courseCategories = {
   1: 'ug', 2: 'ug', 3: 'ug', 4: 'ug', 5: 'ug', 6: 'ug', 7: 'ug', 8: 'ug', 9: 'ug', 10: 'ug',
   11: 'diploma', 12: 'diploma', 13: 'ug', 14: 'cert', 15: 'cert', 16: 'cert', 17: 'diploma', 18: 'diploma',
   19: 'pg', 20: 'pg', 21: 'pg', 22: 'pg', 23: 'pg', 24: 'pg', 25: 'pg', 26: 'pg', 27: 'diploma', 28: 'pg',
-  29: 'phd'
+  29: 'phd', 30: 'ug'
 };
 
 const courses = [
@@ -92,6 +92,32 @@ const courses = [
           { name: "Semester - 4", fee: 0.00 },
           { name: "Semester - 5", fee: 0.00 },
           { name: "Semester - 6", fee: 0.00 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 30,
+    name: "Bachelor of Naturopathy & Yogic Sciences (B.N.Y.S.)",
+    code: "BNYS - 01",
+    duration: "11 - Semester's (5.5 Years)",
+    icon: "fa-spa",
+    subcourses: [
+      {
+        name: "Naturopathy & Yogic Sciences",
+        code: "BNYS - 01",
+        semesters: [
+          { name: "Semester - 1", fee: 25000.00 },
+          { name: "Semester - 2", fee: 25000.00 },
+          { name: "Semester - 3", fee: 25000.00 },
+          { name: "Semester - 4", fee: 25000.00 },
+          { name: "Semester - 5", fee: 25000.00 },
+          { name: "Semester - 6", fee: 25000.00 },
+          { name: "Semester - 7", fee: 25000.00 },
+          { name: "Semester - 8", fee: 25000.00 },
+          { name: "Semester - 9", fee: 25000.00 },
+          { name: "Semester - 10", fee: 25000.00 },
+          { name: "Internship (1 Year)", fee: 25000.00 }
         ]
       }
     ]

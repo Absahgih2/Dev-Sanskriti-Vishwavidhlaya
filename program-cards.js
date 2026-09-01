@@ -13,6 +13,19 @@ const programCards = [
     pageLink: 'programs/bsc/index.html'
   },
   {
+    id: 'bnys',
+    category: 'ug',
+    title: 'Bachelor of Naturopathy & Yogic Sciences (B.N.Y.S.)',
+    icon: 'fa-spa',
+    badge: '5.5 Years \u2022 UG Degree',
+    description: 'Comprehensive program integrating naturopathy, yoga therapy, and holistic healing sciences. Trains students in natural medicine, yoga, physiotherapy, and clinical practice with 1-year mandatory internship.',
+    eligibility: '10+2 with Science (PCB)',
+    feePerSem: '\u20b925,000',
+    totalFee: '\u20b95,50,000',
+    specializations: ['Naturopathy & Yogic Sciences'],
+    pageLink: 'programs/bnys/index.html'
+  },
+  {
     id: 'ba',
     category: 'ug',
     title: 'Bachelor of Arts (B.A.)',
