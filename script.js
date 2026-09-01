@@ -123,6 +123,7 @@ function openCourseModal(programId) {
     if (title.includes('b.h.m') && c.name.includes('Bachelor of Hotel')) return true;
     if (title.includes('m.sc') && c.name.includes('Master of Science')) return true;
     if (title.includes('m.a.') && c.name.includes('Master of Arts') && !c.name.includes('M.Com')) return true;
+    if (title.includes('m.a.') && c.name.includes('M.A.) Psychology')) return true;
     if (title.includes('m.com') && c.name.includes('Master of Commerce')) return true;
     if (title.includes('m.b.a') && c.name.includes('Master of Business Admin')) return true;
     if (title.includes('m.c.a') && c.name.includes('Master of Computer')) return true;

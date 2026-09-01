@@ -2,7 +2,7 @@ const courseCategories = {
   1: 'ug', 2: 'ug', 3: 'ug', 4: 'ug', 5: 'ug', 6: 'ug', 7: 'ug', 8: 'ug', 9: 'ug', 10: 'ug',
   11: 'diploma', 12: 'diploma', 13: 'ug', 14: 'cert', 15: 'cert', 16: 'cert', 17: 'diploma', 18: 'diploma',
   19: 'pg', 20: 'pg', 21: 'pg', 22: 'pg', 23: 'pg', 24: 'pg', 25: 'pg', 26: 'pg', 27: 'diploma', 28: 'pg',
-  29: 'phd', 30: 'ug'
+  29: 'phd', 30: 'ug', 31: 'pg'
 };
 
 const courses = [
@@ -1724,6 +1724,25 @@ const courses = [
           { name: "Year - 1", fee: 90000.00 },
           { name: "Year - 2", fee: 90000.00 },
           { name: "Year - 3", fee: 90000.00 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 31,
+    name: "Master of Arts (M.A.) Psychology",
+    code: "M.A. Psychology - 31",
+    duration: "4 - Semester's",
+    icon: "fa-brain",
+    subcourses: [
+      {
+        name: "Psychology",
+        code: "M.A. Psychology - 31",
+        semesters: [
+          { name: "Semester - 1", fee: 12000.00 },
+          { name: "Semester - 2", fee: 12000.00 },
+          { name: "Semester - 3", fee: 12000.00 },
+          { name: "Semester - 4", fee: 12000.00 }
         ]
       }
     ]

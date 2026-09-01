@@ -156,6 +156,19 @@ const programCards = [
     pageLink: null
   },
   {
+    id: 'ma-psychology',
+    category: 'pg',
+    title: 'M.A. Psychology',
+    icon: 'fa-brain',
+    badge: '4 Semesters \u2022 PG Degree',
+    description: 'Postgraduate psychology program covering cognitive, clinical, developmental, and behavioral psychology with hands-on research and practical training.',
+    eligibility: 'B.A. in any stream',
+    feePerSem: '\u20b912,000',
+    totalFee: '\u20b948,000',
+    specializations: ['Psychology'],
+    pageLink: 'programs/pg-psychology/index.html'
+  },
+  {
     id: 'ma',
     category: 'pg',
     title: 'Master of Arts (M.A.)',
