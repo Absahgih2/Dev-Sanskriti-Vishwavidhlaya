@@ -83,12 +83,25 @@ const programCards = [
     title: 'Bachelor of Technology (B.Tech.)',
     icon: 'fa-cogs',
     badge: '8 Semesters \u2022 UG Degree',
-    description: 'Engineering programs in Electrical, Computer Science, Civil, Mining, Chemical, Electronics & Telecommunication with practical lab training.',
+    description: 'Engineering programs in Electrical, Computer Science, Civil, Mining, Chemical, Electronics & Telecommunication, and Mechanical with practical lab training.',
     eligibility: '10+2 with PCM (50% marks)',
     feePerSem: '\u20b920,000',
     totalFee: '\u20b91,60,000',
-    specializations: ['Electrical', 'Computer Science', 'Electrical & Electronics', 'Mining', 'Civil', 'Chemical Engineering', 'Electronics & Tele-Communication', 'Electronics Engineering', 'Environmental Science'],
+    specializations: ['Electrical', 'Computer Science', 'Electrical & Electronics', 'Mining', 'Civil', 'Chemical Engineering', 'Electronics & Tele-Communication', 'Electronics Engineering', 'Environmental Science', 'Mechanical Engineering'],
     pageLink: 'programs/btech/index.html'
+  },
+  {
+    id: 'btech-mechanical',
+    category: 'ug',
+    title: 'B.Tech Mechanical Engineering',
+    icon: 'fa-gears',
+    badge: '8 Semesters \u2022 UG Degree',
+    description: 'Comprehensive mechanical engineering program covering thermodynamics, manufacturing, robotics, design, and automotive engineering with regular and lateral entry options.',
+    eligibility: '10+2 with PCM (50%) / Diploma in Mech. Engg.',
+    feePerSem: '\u20b920,000',
+    totalFee: '\u20b91,60,000',
+    specializations: ['Mechanical Engineering'],
+    pageLink: 'programs/btech-mechanical/index.html'
   },
   {
     id: 'bsw',
