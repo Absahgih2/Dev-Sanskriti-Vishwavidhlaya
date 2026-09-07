@@ -1776,6 +1776,10 @@ table {
    A4 LANDSCAPE MARKSHEET SYSTEM (EXACT SAMPLE 2.JPG REPLICATION)
    ============================================================ */
 
+.print-only-container {
+  display: none !important;
+}
+
 @page {
   size: A4 landscape;
   margin: 0;
