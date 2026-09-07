@@ -885,16 +885,22 @@ export default function App() {
     });
 
     if (found) {
-      if (!found.isPublished) {
-        setPortalError('Documents for this student are currently in draft state and have not been published by the University.');
-        return;
-      }
       const course = courses.find(c => c.name.toLowerCase() === found.course.toLowerCase());
       setPortalStudent(found);
       setPortalCourse(course || { name: found.course, terms: {} });
       const terms = Object.keys(found.marksheets || {});
       setPortalActiveTerm(terms[0] || '');
-      setPortalActiveTab('marksheet');
+      // Default to first published tab
+      const pd = found.publishedDocs || {};
+      if (terms[0]) {
+        if (pd.marksheets?.[terms[0]] !== false) setPortalActiveTab('marksheet');
+        else if (pd.admitCards?.[terms[0]] !== false) setPortalActiveTab('admit');
+        else if (pd.results?.[terms[0]] !== false) setPortalActiveTab('result');
+        else if (pd.idCards?.[terms[0]] !== false) setPortalActiveTab('idcard');
+        else setPortalActiveTab('marksheet');
+      } else {
+        setPortalActiveTab('marksheet');
+      }
     } else {
       setPortalError('No student record found matching the provided credentials. Please check the spelling and Roll/Enrollment Number.');
     }
@@ -2302,6 +2308,16 @@ export default function App() {
                       <button className={`portal-tab-btn ${portalActiveTab === 'idcard' ? 'active' : ''}`} onClick={() => setPortalActiveTab('idcard')}>
                         <UserCheck size={16} /> Identity Card
                       </button>
+                    )}
+
+                    {/* Check if any tab is visible */}
+                    {!(
+                      (!portalStudent.publishedDocs?.marksheets || portalStudent.publishedDocs.marksheets[portalActiveTerm] !== false) ||
+                      (!portalStudent.publishedDocs?.admitCards || portalStudent.publishedDocs.admitCards[portalActiveTerm] !== false) ||
+                      (!portalStudent.publishedDocs?.results || portalStudent.publishedDocs.results[portalActiveTerm] !== false) ||
+                      (!portalStudent.publishedDocs?.idCards || portalStudent.publishedDocs.idCards[portalActiveTerm] !== false)
+                    ) && (
+                      <span style={{ fontSize: '13px', color: '#94a3b8', padding: '8px 12px' }}>No documents published for {portalActiveTerm}</span>
                     )}
                   </div>
 
