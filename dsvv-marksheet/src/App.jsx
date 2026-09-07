@@ -2286,37 +2286,35 @@ export default function App() {
                 <div className="portal-top-toolbar no-print">
                   {/* Left: Document Tabs Switcher */}
                   <div className="portal-tabs-group">
-                    {(!portalStudent.publishedDocs?.marksheets || portalStudent.publishedDocs.marksheets[portalActiveTerm] !== false) && (
+                    {portalStudent.publishedDocs?.marksheets?.[portalActiveTerm] === true && (
                       <button className={`portal-tab-btn ${portalActiveTab === 'marksheet' ? 'active' : ''}`} onClick={() => setPortalActiveTab('marksheet')}>
                         <FileText size={16} /> Marksheet
                       </button>
                     )}
 
-                    {(!portalStudent.publishedDocs?.admitCards || portalStudent.publishedDocs.admitCards[portalActiveTerm] !== false) && (
+                    {portalStudent.publishedDocs?.admitCards?.[portalActiveTerm] === true && (
                       <button className={`portal-tab-btn ${portalActiveTab === 'admit' ? 'active' : ''}`} onClick={() => setPortalActiveTab('admit')}>
                         <Calendar size={16} /> Admit Card
                       </button>
                     )}
 
-                    {(!portalStudent.publishedDocs?.results || portalStudent.publishedDocs.results[portalActiveTerm] !== false) && (
+                    {portalStudent.publishedDocs?.results?.[portalActiveTerm] === true && (
                       <button className={`portal-tab-btn ${portalActiveTab === 'result' ? 'active' : ''}`} onClick={() => setPortalActiveTab('result')}>
                         <Globe size={16} /> Online Result
                       </button>
                     )}
 
-                    {(!portalStudent.publishedDocs?.idCards || portalStudent.publishedDocs.idCards[portalActiveTerm] !== false) && (
+                    {portalStudent.publishedDocs?.idCards?.[portalActiveTerm] === true && (
                       <button className={`portal-tab-btn ${portalActiveTab === 'idcard' ? 'active' : ''}`} onClick={() => setPortalActiveTab('idcard')}>
                         <UserCheck size={16} /> Identity Card
                       </button>
                     )}
 
                     {/* Check if any tab is visible */}
-                    {!(
-                      (!portalStudent.publishedDocs?.marksheets || portalStudent.publishedDocs.marksheets[portalActiveTerm] !== false) ||
-                      (!portalStudent.publishedDocs?.admitCards || portalStudent.publishedDocs.admitCards[portalActiveTerm] !== false) ||
-                      (!portalStudent.publishedDocs?.results || portalStudent.publishedDocs.results[portalActiveTerm] !== false) ||
-                      (!portalStudent.publishedDocs?.idCards || portalStudent.publishedDocs.idCards[portalActiveTerm] !== false)
-                    ) && (
+                    {!(portalStudent.publishedDocs?.marksheets?.[portalActiveTerm] === true ||
+                      portalStudent.publishedDocs?.admitCards?.[portalActiveTerm] === true ||
+                      portalStudent.publishedDocs?.results?.[portalActiveTerm] === true ||
+                      portalStudent.publishedDocs?.idCards?.[portalActiveTerm] === true) && (
                       <span style={{ fontSize: '13px', color: '#94a3b8', padding: '8px 12px' }}>No documents published for {portalActiveTerm}</span>
                     )}
                   </div>
