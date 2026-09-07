@@ -113,6 +113,7 @@ export default function App() {
     email: '',
     rollNo: '',
     enrollmentNo: '',
+    schoolCollege: '',
     photo: '',
     centerCode: ''
   });
@@ -537,6 +538,7 @@ export default function App() {
       email: '',
       rollNo: nextRoll,
       enrollmentNo: nextEnroll,
+      schoolCollege: '',
       photo: '',
       centerCode: loggedCenter ? loggedCenter.centerCode : ''
     });
@@ -566,6 +568,7 @@ export default function App() {
       email: student.email || '',
       rollNo: student.rollNo,
       enrollmentNo: student.enrollmentNo,
+      schoolCollege: student.schoolCollege || '',
       photo: student.photo,
       centerCode: student.centerCode || ''
     });
@@ -737,6 +740,7 @@ export default function App() {
         photo: formData.photo,
         rollNo: formData.rollNo,
         enrollmentNo: formData.enrollmentNo,
+        schoolCollege: formData.schoolCollege,
         centerCode: isCenterAction ? loggedCenter.centerCode : (formData.centerCode || 'DSVV-MAIN'),
         isPublished: true,
         marksheets: marksheetsData,
@@ -1273,6 +1277,19 @@ export default function App() {
                           value={formData.enrollmentNo} 
                           onChange={e => setFormData(p => ({ ...p, enrollmentNo: e.target.value }))} 
                           required 
+                        />
+                      </div>
+                    </div>
+
+                    {/* Row 3.5: School / College Name */}
+                    <div style={{ marginBottom: '24px' }}>
+                      <div className="form-group">
+                        <label style={{ fontSize: '11px', fontWeight: '700', color: '#475569', letterSpacing: '0.05em' }}>SCHOOL / COLLEGE NAME</label>
+                        <input 
+                          style={{ padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '14px' }}
+                          placeholder="Enter School or College Name"
+                          value={formData.schoolCollege} 
+                          onChange={e => setFormData(p => ({ ...p, schoolCollege: e.target.value }))} 
                         />
                       </div>
                     </div>

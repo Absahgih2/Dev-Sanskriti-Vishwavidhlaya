@@ -322,6 +322,13 @@ export default function MarksheetTemplate({ student, course, termName }) {
                 <span className="ms-colon">:</span>
                 <span className="ms-val">{student.enrollmentNo}</span>
               </div>
+              {student.schoolCollege && (
+                <div className="ms-profile-row">
+                  <span className="ms-lbl-r">School/College</span>
+                  <span className="ms-colon">:</span>
+                  <span className="ms-val">{student.schoolCollege}</span>
+                </div>
+              )}
             </div>
           </div>
 

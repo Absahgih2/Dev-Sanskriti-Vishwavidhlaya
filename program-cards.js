@@ -104,6 +104,19 @@ const programCards = [
     pageLink: 'programs/btech-mechanical/index.html'
   },
   {
+    id: 'bed',
+    category: 'ug',
+    title: 'Bachelor of Education (B.Ed.)',
+    icon: 'fa-chalkboard-teacher',
+    badge: '4 Semesters \u2022 UG Degree',
+    description: 'Professional teaching education program covering pedagogy, educational psychology, classroom management, and teaching methodology with school internships.',
+    eligibility: 'Graduation in any stream (50% marks)',
+    feePerSem: '\u20b915,000',
+    totalFee: '\u20b960,000',
+    specializations: ['General'],
+    pageLink: 'programs/bed/index.html'
+  },
+  {
     id: 'bsw',
     category: 'ug',
     title: 'Bachelor of Social Work (B.S.W.)',
