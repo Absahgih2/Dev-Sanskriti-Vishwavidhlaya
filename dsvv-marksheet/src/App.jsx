@@ -491,13 +491,14 @@ export default function App() {
   // ============================================================
   const startPublishDocs = (student) => {
     setPublishingStudent(student);
-    const defaults = { marksheets: {}, admitCards: {}, results: {} };
+    const defaults = { marksheets: {}, admitCards: {}, results: {}, idCards: {} };
     const course = courses.find(c => c.name.toLowerCase() === student.course.toLowerCase());
     const terms = course ? getTermNames(course) : Object.keys(student.marksheets || {});
     terms.forEach(t => {
       defaults.marksheets[t] = student.publishedDocs?.marksheets?.[t] ?? true;
       defaults.admitCards[t] = student.publishedDocs?.admitCards?.[t] ?? true;
       defaults.results[t] = student.publishedDocs?.results?.[t] ?? true;
+      defaults.idCards[t] = student.publishedDocs?.idCards?.[t] ?? true;
     });
     setLocalPublishDocs(student.publishedDocs || defaults);
   };
@@ -506,7 +507,8 @@ export default function App() {
     if (!publishingStudent) return;
     const hasAny = Object.values(localPublishDocs.marksheets || {}).some(v => v) ||
                    Object.values(localPublishDocs.admitCards || {}).some(v => v) ||
-                   Object.values(localPublishDocs.results || {}).some(v => v);
+                   Object.values(localPublishDocs.results || {}).some(v => v) ||
+                   Object.values(localPublishDocs.idCards || {}).some(v => v);
 
     setStudents(prev => prev.map(s => {
       if (s.id === publishingStudent.id) {
@@ -710,11 +712,12 @@ export default function App() {
       };
     });
 
-    const publishedDocs = { marksheets: {}, admitCards: {}, results: {} };
+    const publishedDocs = { marksheets: {}, admitCards: {}, results: {}, idCards: {} };
     terms.forEach(t => {
       publishedDocs.marksheets[t] = true;
       publishedDocs.admitCards[t] = true;
       publishedDocs.results[t] = true;
+      publishedDocs.idCards[t] = true;
     });
 
     if (editingStudentId) {
@@ -2295,9 +2298,11 @@ export default function App() {
                       </button>
                     )}
 
-                    <button className={`portal-tab-btn ${portalActiveTab === 'idcard' ? 'active' : ''}`} onClick={() => setPortalActiveTab('idcard')}>
-                      <UserCheck size={16} /> Identity Card
-                    </button>
+                    {(!portalStudent.publishedDocs?.idCards || portalStudent.publishedDocs.idCards[portalActiveTerm] !== false) && (
+                      <button className={`portal-tab-btn ${portalActiveTab === 'idcard' ? 'active' : ''}`} onClick={() => setPortalActiveTab('idcard')}>
+                        <UserCheck size={16} /> Identity Card
+                      </button>
+                    )}
                   </div>
 
                   {/* Right: Term Selector + Print + Download JPG + Download PDF */}
@@ -2407,6 +2412,22 @@ export default function App() {
                           setLocalPublishDocs(prev => ({
                             ...prev,
                             results: { ...(prev.results || {}), [term]: checked }
+                          }));
+                        }}
+                      />
+                    </label>
+
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', fontSize: '13px' }}>
+                      <span>Identity Card</span>
+                      <input 
+                        type="checkbox"
+                        style={{ width: '17px', height: '17px', cursor: 'pointer' }}
+                        checked={localPublishDocs.idCards?.[term] ?? true}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          setLocalPublishDocs(prev => ({
+                            ...prev,
+                            idCards: { ...(prev.idCards || {}), [term]: checked }
                           }));
                         }}
                       />

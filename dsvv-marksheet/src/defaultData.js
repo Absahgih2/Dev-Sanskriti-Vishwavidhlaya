@@ -141,6 +141,10 @@ export const DEFAULT_STUDENTS = [
       results: {
         "1st Semester": true, "2nd Semester": true, "3rd Semester": true,
         "4th Semester": true, "5th Semester": true, "6th Semester": true
+      },
+      idCards: {
+        "1st Semester": true, "2nd Semester": true, "3rd Semester": true,
+        "4th Semester": true, "5th Semester": true, "6th Semester": true
       }
     }
   },
@@ -201,6 +205,10 @@ export const DEFAULT_STUDENTS = [
         "4th Semester": true, "5th Semester": true, "6th Semester": true
       },
       results: {
+        "1st Semester": true, "2nd Semester": true, "3rd Semester": true,
+        "4th Semester": true, "5th Semester": true, "6th Semester": true
+      },
+      idCards: {
         "1st Semester": true, "2nd Semester": true, "3rd Semester": true,
         "4th Semester": true, "5th Semester": true, "6th Semester": true
       }
