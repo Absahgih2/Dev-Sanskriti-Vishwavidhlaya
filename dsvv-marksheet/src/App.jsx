@@ -893,13 +893,13 @@ export default function App() {
       // Default to first published tab
       const pd = found.publishedDocs || {};
       if (terms[0]) {
-        if (pd.marksheets?.[terms[0]] !== false) setPortalActiveTab('marksheet');
-        else if (pd.admitCards?.[terms[0]] !== false) setPortalActiveTab('admit');
-        else if (pd.results?.[terms[0]] !== false) setPortalActiveTab('result');
-        else if (pd.idCards?.[terms[0]] !== false) setPortalActiveTab('idcard');
-        else setPortalActiveTab('marksheet');
+        if (pd.marksheets?.[terms[0]] === true) setPortalActiveTab('marksheet');
+        else if (pd.admitCards?.[terms[0]] === true) setPortalActiveTab('admit');
+        else if (pd.results?.[terms[0]] === true) setPortalActiveTab('result');
+        else if (pd.idCards?.[terms[0]] === true) setPortalActiveTab('idcard');
+        else setPortalActiveTab('');
       } else {
-        setPortalActiveTab('marksheet');
+        setPortalActiveTab('');
       }
     } else {
       setPortalError('No student record found matching the provided credentials. Please check the spelling and Roll/Enrollment Number.');
