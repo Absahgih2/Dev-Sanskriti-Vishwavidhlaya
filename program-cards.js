@@ -182,6 +182,19 @@ const programCards = [
     pageLink: null
   },
   {
+    id: 'msc-chemistry',
+    category: 'pg',
+    title: 'M.Sc. Chemistry',
+    icon: 'fa-flask',
+    badge: '4 Semesters \u2022 PG Degree',
+    description: 'Postgraduate chemistry program covering organic, inorganic, physical, analytical, and computational chemistry with advanced laboratory training.',
+    eligibility: 'B.Sc. with Chemistry',
+    feePerSem: '\u20b918,000',
+    totalFee: '\u20b972,000',
+    specializations: ['Chemistry'],
+    pageLink: 'programs/msc-chemistry/index.html'
+  },
+  {
     id: 'ma-psychology',
     category: 'pg',
     title: 'M.A. Psychology',
