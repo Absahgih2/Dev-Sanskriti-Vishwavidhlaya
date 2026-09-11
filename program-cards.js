@@ -401,5 +401,18 @@ const programCards = [
     totalFee: '\u20b92,70,000',
     specializations: ['Hindi', 'English', 'Geography', 'Sociology', 'Social Work', 'Management', 'Commerce', 'Mass Communication', 'Yoga', 'Education', 'Physics', 'Chemistry', 'Bio-Technology', 'Bio-Chemistry', 'Zoology', 'Mathematics', 'Botany', 'Arts', 'Science'],
     pageLink: 'programs/phd/index.html'
+  },
+  {
+    id: 'mrev',
+    category: 'pg',
+    title: 'Masters in Real Estate Valuation',
+    icon: 'fa-building',
+    badge: '4 Semesters \u2022 PG Degree',
+    description: 'Professional postgraduate program in real estate valuation, property assessment, land economics, and valuation methodologies for the growing Indian real estate sector.',
+    eligibility: 'Graduation in any discipline with 50% marks',
+    feePerSem: '\u20b920,000',
+    totalFee: '\u20b980,000',
+    specializations: ['Real Estate Valuation'],
+    pageLink: 'programs/mrev/index.html'
   }
 ];

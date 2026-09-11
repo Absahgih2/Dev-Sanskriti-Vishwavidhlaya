@@ -125,6 +125,7 @@ function openCourseModal(programId) {
     if (title.includes('m.a.') && c.name.includes('Master of Arts') && !c.name.includes('M.Com')) return true;
     if (title.includes('m.a.') && c.name.includes('M.A.) Psychology')) return true;
     if (title.includes('m.sc') && c.name.includes('M.Sc.) Chemistry')) return true;
+    if (title.includes('real estate') && c.name.includes('Real Estate Valuation')) return true;
     if (title.includes('m.com') && c.name.includes('Master of Commerce')) return true;
     if (title.includes('m.b.a') && c.name.includes('Master of Business Admin')) return true;
     if (title.includes('m.c.a') && c.name.includes('Master of Computer')) return true;
